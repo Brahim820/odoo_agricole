@@ -144,11 +144,30 @@ bsr_agri_base (base)
 addons_path = /path/to/addons,/path/to/bsr_modules
 ```
 
-## 📞 Support
+## � Documentation
+
+### 📖 **Guides Complets Disponibles :**
+
+| 📋 Guide | 🎯 Description | 👥 Public |
+|----------|----------------|-----------|
+| 🚀 [**Démarrage Rapide**](wiki/Quick-Start-Guide.md) | Installation en 5 minutes | Débutants |
+| 🏗️ [**Architecture**](wiki/Modules-Architecture.md) | Structure technique détaillée | Développeurs |
+| 👨‍💻 [**Guide Développeur**](wiki/Developer-Guide.md) | Contribution et standards | Contributeurs |
+| 🐛 [**Dépannage**](wiki/Troubleshooting.md) | Résolution problèmes courants | Support |
+| 🏠 [**Documentation Home**](wiki/Home.md) | Navigation complète | Tous |
+
+### 📺 **Tutoriels Étape par Étape :**
+- ⚡ [Installation 5 minutes](wiki/Quick-Start-Guide.md#⚡-installation-en-5-minutes)
+- 🎯 [Premier projet agricole](wiki/Quick-Start-Guide.md#🎯-premier-projet-agricole)
+- 🔧 [Configuration avancée](wiki/Developer-Guide.md#🛠️-environnement-de-développement)
+- 🔐 [Gestion sécurité](wiki/Troubleshooting.md#🔐-problèmes-de-sécurité)
+
+## �📞 Support
 
 - **Développeur** : BSR Agriculture Team
 - **Email** : support@bsr-agriculture.com, brahim820@gmail.com
-- **Documentation** : [Wiki GitHub](https://github.com/Brahim820/odoo_agricole/wiki)
+- **Documentation** : [Guides Complets](wiki/Home.md)
+- **Issues** : [GitHub Issues](https://github.com/Brahim820/odoo_agricole/issues)
 
 ## 📝 Changelog
 
