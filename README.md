@@ -147,7 +147,7 @@ addons_path = /path/to/addons,/path/to/bsr_modules
 ## 📞 Support
 
 - **Développeur** : BSR Agriculture Team
-- **Email** : support@bsr-agriculture.com
+- **Email** : support@bsr-agriculture.com, brahim820@gmail.com
 - **Documentation** : [Wiki GitHub](https://github.com/Brahim820/odoo_agricole/wiki)
 
 ## 📝 Changelog
