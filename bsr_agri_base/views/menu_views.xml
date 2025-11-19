@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Menu principal Agriculture -->
+    <menuitem id="menu_agriculture_root"
+              name="Agriculture"
+              sequence="10"
+              web_icon="bsr_agri_base,static/description/icon.png"/>
+
+    <!-- Menu Gestion des Fermes -->
+    <menuitem id="menu_farm_management"
+              name="Gestion des Fermes"
+              parent="menu_agriculture_root"
+              sequence="10"/>
+
+    <!-- Sous-menus Gestion des Fermes -->
+    <menuitem id="menu_farm"
+              name="Fermes"
+              parent="menu_farm_management"
+              action="action_farm"
+              sequence="10"/>
+
+    <menuitem id="menu_parcel"
+              name="Parcelles"
+              parent="menu_farm_management"
+              action="action_parcel"
+              sequence="20"/>
+
+    <menuitem id="menu_culture"
+              name="Cultures"
+              parent="menu_farm_management"
+              action="action_culture"
+              sequence="30"/>
+
+    <menuitem id="menu_culture_campaign"
+              name="Campagnes de Culture"
+              parent="menu_farm_management"
+              action="action_culture_campaign"
+              sequence="40"/>
+
+    <!-- Menu Gestion des Équipements -->
+    <menuitem id="menu_equipment_management"
+              name="Gestion des Équipements"
+              parent="menu_agriculture_root"
+              sequence="20"/>
+
+    <!-- Sous-menus Gestion des Équipements -->
+    <menuitem id="menu_maintenance_equipment"
+              name="Équipements de Maintenance"
+              parent="menu_equipment_management"
+              action="maintenance.hr_equipment_action"
+              sequence="10"/>
+
+    <menuitem id="menu_fleet_vehicle"
+              name="Flotte de Véhicules"
+              parent="menu_equipment_management"
+              action="fleet.fleet_vehicle_action"
+              sequence="20"/>
+
+    <menuitem id="menu_irrigation_consumable"
+              name="Consommables d'Irrigation"
+              parent="menu_equipment_management"
+              action="action_irrigation_consumable"
+              sequence="30"/>
+
+    <!-- Menu Configuration -->
+    <menuitem id="menu_agriculture_config"
+              name="Configuration"
+              parent="menu_agriculture_root"
+              sequence="90"/>
+
+    <!-- Sous-menus Configuration -->
+    <menuitem id="menu_culture_type"
+              name="Types de Culture"
+              parent="menu_agriculture_config"
+              action="action_culture_type"
+              sequence="10"/>
+
+</odoo>

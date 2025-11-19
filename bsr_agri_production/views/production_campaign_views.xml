@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ========== CAMPAGNE DE PRODUCTION ========== -->
+    
+    <!-- Vue Tree -->
+    <record id="view_production_campaign_tree" model="ir.ui.view">
+        <field name="name">bsr.production.campaign.tree</field>
+        <field name="model">bsr.production.campaign</field>
+        <field name="arch" type="xml">
+            <tree string="Campagnes de Production" decoration-info="state=='draft'" decoration-warning="state=='planned'" decoration-success="state=='active'" decoration-muted="state=='cancelled'">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="farm_id"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+                <field name="cycle_count"/>
+                <field name="total_area"/>
+                <field name="progress" widget="progressbar"/>
+                <field name="state" widget="badge" decoration-info="state=='draft'" decoration-warning="state=='planned'" decoration-success="state=='active'" decoration-danger="state=='cancelled'"/>
+                <field name="user_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Vue Form -->
+    <record id="view_production_campaign_form" model="ir.ui.view">
+        <field name="name">bsr.production.campaign.form</field>
+        <field name="model">bsr.production.campaign</field>
+        <field name="arch" type="xml">
+            <form string="Campagne de Production">
+                <header>
+                    <button name="action_plan" string="Planifier" type="object" states="draft" class="oe_highlight"/>
+                    <button name="action_start" string="Démarrer" type="object" states="planned" class="oe_highlight"/>
+                    <button name="action_complete" string="Terminer" type="object" states="active" class="oe_highlight"/>
+                    <button name="action_cancel" string="Annuler" type="object" states="draft,planned,active"/>
+                    <button name="action_reset_to_draft" string="Remettre en Brouillon" type="object" states="cancelled"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,planned,active,completed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button type="object" name="action_view_cycles" class="oe_stat_button" icon="fa-leaf">
+                            <field name="cycle_count" widget="statinfo" string="Cycles"/>
+                        </button>
+                    </div>
+                    
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only"/>
+                        <h1>
+                            <field name="name" placeholder="Nom de la campagne..."/>
+                        </h1>
+                        <label for="code" class="oe_edit_only"/>
+                        <h3>
+                            <field name="code" placeholder="Code..."/>
+                        </h3>
+                    </div>
+                    
+                    <group>
+                        <group>
+                            <field name="farm_id" required="1"/>
+                            <field name="user_id"/>
+                            <field name="start_date"/>
+                            <field name="end_date"/>
+                        </group>
+                        <group>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="duration_days" readonly="1"/>
+                            <field name="progress" widget="progressbar"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    
+                    <group string="Métriques">
+                        <group>
+                            <field name="total_area" readonly="1"/>
+                            <field name="total_planned_harvest" readonly="1"/>
+                        </group>
+                    </group>
+                    
+                    <field name="description" placeholder="Description de la campagne..."/>
+                    
+                    <notebook>
+                        <page string="Cycles de Production" name="cycles">
+                            <field name="cycle_ids" context="{'default_campaign_id': active_id}">
+                                <tree string="Cycles">
+                                    <field name="code"/>
+                                    <field name="name"/>
+                                    <field name="parcel_id"/>
+                                    <field name="culture_id"/>
+                                    <field name="current_phase"/>
+                                    <field name="cultivated_area"/>
+                                    <field name="planned_harvest_qty"/>
+                                    <field name="progress" widget="progressbar"/>
+                                    <field name="state" widget="badge"/>
+                                </tree>
+                                <form string="Cycle">
+                                    <header>
+                                        <field name="state" widget="statusbar"/>
+                                    </header>
+                                    <sheet>
+                                        <group>
+                                            <group>
+                                                <field name="name"/>
+                                                <field name="code"/>
+                                                <field name="parcel_id"/>
+                                                <field name="culture_id"/>
+                                                <field name="variety"/>
+                                            </group>
+                                            <group>
+                                                <field name="current_phase"/>
+                                                <field name="start_date"/>
+                                                <field name="planned_end_date"/>
+                                                <field name="cultivated_area"/>
+                                            </group>
+                                        </group>
+                                    </sheet>
+                                </form>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Vue Kanban -->
+    <record id="view_production_campaign_kanban" model="ir.ui.view">
+        <field name="name">bsr.production.campaign.kanban</field>
+        <field name="model">bsr.production.campaign</field>
+        <field name="arch" type="xml">
+            <kanban string="Campagnes de Production" default_group_by="state" class="o_kanban_small_column">
+                <field name="color"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="farm_id"/>
+                <field name="cycle_count"/>
+                <field name="progress"/>
+                <field name="state"/>
+                <field name="user_id"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="oe_kanban_color_#{kanban_getcolor(record.color.raw_value)} oe_kanban_card oe_kanban_global_click">
+                            <div class="oe_kanban_content">
+                                <div class="o_kanban_record_top">
+                                    <div class="o_kanban_record_headings">
+                                        <strong class="o_kanban_record_title">
+                                            <field name="name"/>
+                                        </strong>
+                                        <br/>
+                                        <small>
+                                            <field name="code"/> - <field name="farm_id"/>
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="o_kanban_record_body">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <span><i class="fa fa-leaf"/> <t t-esc="record.cycle_count.value"/> cycles</span>
+                                        </div>
+                                        <div class="col-6">
+                                            <span><i class="fa fa-user"/> <field name="user_id"/></span>
+                                        </div>
+                                    </div>
+                                    <div class="row mt8">
+                                        <div class="col-12">
+                                            <div class="progress">
+                                                <div class="progress-bar" role="progressbar" t-att-style="'width: ' + record.progress.value + '%'">
+                                                    <t t-esc="Math.round(record.progress.value)"/>%
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Vue Search -->
+    <record id="view_production_campaign_search" model="ir.ui.view">
+        <field name="name">bsr.production.campaign.search</field>
+        <field name="model">bsr.production.campaign</field>
+        <field name="arch" type="xml">
+            <search string="Rechercher Campagnes">
+                <field name="name" string="Campagne" filter_domain="['|', ('name','ilike',self), ('code','ilike',self)]"/>
+                <field name="farm_id"/>
+                <field name="user_id"/>
+                <separator/>
+                <filter string="Mes Campagnes" name="my_campaigns" domain="[('user_id','=',uid)]"/>
+                <filter string="En Cours" name="active" domain="[('state','=','active')]"/>
+                <filter string="Planifiées" name="planned" domain="[('state','=','planned')]"/>
+                <separator/>
+                <filter string="Cette Année" name="this_year" domain="[('start_date','&gt;=', datetime.datetime.now().strftime('%Y-01-01'))]"/>
+                <separator/>
+                <filter string="Archivé" name="inactive" domain="[('active','=',False)]"/>
+                <group expand="0" string="Grouper par">
+                    <filter string="État" name="group_state" context="{'group_by':'state'}"/>
+                    <filter string="Ferme" name="group_farm" context="{'group_by':'farm_id'}"/>
+                    <filter string="Responsable" name="group_user" context="{'group_by':'user_id'}"/>
+                    <filter string="Année" name="group_year" context="{'group_by':'start_date:year'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Vue Calendar -->
+    <record id="view_production_campaign_calendar" model="ir.ui.view">
+        <field name="name">bsr.production.campaign.calendar</field>
+        <field name="model">bsr.production.campaign</field>
+        <field name="arch" type="xml">
+            <calendar string="Calendrier des Campagnes" date_start="start_date" date_stop="end_date" color="user_id" mode="month">
+                <field name="name"/>
+                <field name="farm_id"/>
+                <field name="state"/>
+            </calendar>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_production_campaign" model="ir.actions.act_window">
+        <field name="name">Campagnes de Production</field>
+        <field name="res_model">bsr.production.campaign</field>
+        <field name="view_mode">kanban,tree,form,calendar</field>
+        <field name="search_view_id" ref="view_production_campaign_search"/>
+        <field name="context">{'search_default_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Créer votre première campagne de production
+            </p>
+            <p>
+                Une campagne de production permet de planifier et suivre
+                l'ensemble des cycles de culture sur une période donnée.
+            </p>
+        </field>
+    </record>
+
+</odoo>

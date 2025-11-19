@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Menu principal -->
+    <menuitem id="menu_pepiniere_root"
+              name="Pépinière"
+              sequence="10"
+              web_icon="bsr_agri_pepinaire,static/description/icon.png"/>
+
+    <!-- Menu Production -->
+    <menuitem id="menu_pepiniere_production"
+              name="Production"
+              parent="menu_pepiniere_root"
+              sequence="10"/>
+
+    <menuitem id="menu_pepiniere_lot_plant"
+              name="Lots de plants"
+              parent="menu_pepiniere_production"
+              action="action_pepiniere_lot_plant"
+              sequence="10"/>
+
+    <menuitem id="menu_pepiniere_intervention"
+              name="Interventions"
+              parent="menu_pepiniere_production"
+              action="action_pepiniere_intervention"
+              sequence="20"/>
+
+    <!-- Menu Catalogue -->
+    <menuitem id="menu_pepiniere_catalogue"
+              name="Catalogue"
+              parent="menu_pepiniere_root"
+              sequence="20"/>
+
+    <menuitem id="menu_pepiniere_espece"
+              name="Espèces"
+              parent="menu_pepiniere_catalogue"
+              action="action_pepiniere_espece"
+              sequence="10"/>
+
+    <menuitem id="menu_pepiniere_variete"
+              name="Variétés"
+              parent="menu_pepiniere_catalogue"
+              action="action_pepiniere_variete"
+              sequence="20"/>
+
+    <!-- Menu Stock -->
+    <menuitem id="menu_pepiniere_stock"
+              name="Stock"
+              parent="menu_pepiniere_root"
+              sequence="30"/>
+
+    <menuitem id="menu_pepiniere_intrant"
+              name="Intrants"
+              parent="menu_pepiniere_stock"
+              action="action_pepiniere_intrant"
+              sequence="10"/>
+
+    <menuitem id="menu_pepiniere_mouvement_intrant"
+              name="Mouvements"
+              parent="menu_pepiniere_stock"
+              action="action_pepiniere_mouvement_intrant"
+              sequence="20"/>
+
+    <!-- Menu Ventes -->
+    <menuitem id="menu_pepiniere_vente"
+              name="Ventes"
+              parent="menu_pepiniere_root"
+              action="action_pepiniere_sale_order"
+              sequence="40"/>
+
+    <!-- Menu Configuration -->
+    <menuitem id="menu_pepiniere_configuration"
+              name="Configuration"
+              parent="menu_pepiniere_root"
+              sequence="100"
+              groups="group_pepiniere_manager"/>
+
+    <menuitem id="menu_pepiniere_serre"
+              name="Serres"
+              parent="menu_pepiniere_configuration"
+              action="action_pepiniere_serre"
+              sequence="10"/>
+
+</odoo>

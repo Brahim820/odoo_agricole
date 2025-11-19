@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Catégorie des groupes de sécurité -->
+    <record id="module_category_agriculture" model="ir.module.category">
+        <field name="name">Agriculture</field>
+        <field name="description">Agriculture et gestion des fermes</field>
+        <field name="sequence">20</field>
+    </record>
+
+    <!-- Groupe: Utilisateur Agriculture -->
+    <record id="group_agriculture_user" model="res.groups">
+        <field name="name">Utilisateur Agriculture</field>
+        <field name="category_id" ref="module_category_agriculture"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        <field name="comment">L'utilisateur peut consulter les fermes, parcelles et cultures.</field>
+    </record>
+
+    <!-- Groupe: Gestionnaire des Opérations -->
+    <record id="group_agriculture_manager" model="res.groups">
+        <field name="name">Gestionnaire des Opérations</field>
+        <field name="category_id" ref="module_category_agriculture"/>
+        <field name="implied_ids" eval="[(4, ref('group_agriculture_user'))]"/>
+        <field name="comment">Le gestionnaire peut créer, modifier et supprimer les cultures et parcelles. Il peut également consulter les fermes.</field>
+    </record>
+
+    <!-- Groupe: Responsable Ferme -->
+    <record id="group_agriculture_farm_manager" model="res.groups">
+        <field name="name">Responsable de Ferme</field>
+        <field name="category_id" ref="module_category_agriculture"/>
+        <field name="implied_ids" eval="[(4, ref('group_agriculture_manager'))]"/>
+        <field name="comment">Le responsable de ferme peut créer, modifier et supprimer les fermes, parcelles et cultures.</field>
+    </record>
+
+    <!-- Groupe: Administrateur Agriculture -->
+    <record id="group_agriculture_admin" model="res.groups">
+        <field name="name">Administrateur Agriculture</field>
+        <field name="category_id" ref="module_category_agriculture"/>
+        <field name="implied_ids" eval="[(4, ref('group_agriculture_farm_manager'))]"/>
+        <field name="comment">L'administrateur a tous les droits sur le module agriculture, y compris la configuration des types de culture.</field>
+    </record>
+
+</odoo>

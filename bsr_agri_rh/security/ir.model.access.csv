@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_bsr_agri_team_user,bsr.agri.team.user,model_bsr_agri_team,hr.group_hr_user,1,1,1,0
+access_bsr_agri_team_manager,bsr.agri.team.manager,model_bsr_agri_team,hr.group_hr_manager,1,1,1,1
+access_bsr_team_assignment_user,bsr.team.assignment.user,model_bsr_team_assignment,hr.group_hr_user,1,1,1,0
+access_bsr_team_assignment_manager,bsr.team.assignment.manager,model_bsr_team_assignment,hr.group_hr_manager,1,1,1,1
+access_bsr_agri_team_employee,bsr.agri.team.employee,model_bsr_agri_team,base.group_user,1,0,0,0
+access_bsr_team_assignment_employee,bsr.team.assignment.employee,model_bsr_team_assignment,base.group_user,1,0,0,0

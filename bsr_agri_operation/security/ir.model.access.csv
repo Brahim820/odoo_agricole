@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_bsr_culture_operation_operator,bsr.culture.operation.operator,model_bsr_culture_operation,group_agriculture_operator,1,1,0,0
+access_bsr_culture_operation_supervisor,bsr.culture.operation.supervisor,model_bsr_culture_operation,group_agriculture_supervisor,1,1,1,1
+access_bsr_culture_operation_manager,bsr.culture.operation.manager,model_bsr_culture_operation,group_agriculture_manager,1,1,1,1
+access_bsr_operation_product_line_operator,bsr.operation.product.line.operator,model_bsr_operation_product_line,group_agriculture_operator,1,1,1,1
+access_bsr_operation_product_line_supervisor,bsr.operation.product.line.supervisor,model_bsr_operation_product_line,group_agriculture_supervisor,1,1,1,1
+access_bsr_operation_product_line_manager,bsr.operation.product.line.manager,model_bsr_operation_product_line,group_agriculture_manager,1,1,1,1

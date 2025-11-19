@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Groupes de sécurité pour les opérations -->
+    <record id="group_agriculture_operator" model="res.groups">
+        <field name="name">Agriculture: Opérateur</field>
+        <field name="category_id" ref="bsr_agri_base.module_category_agriculture"/>
+        <field name="comment">Saisie et exécution des opérations de terrain</field>
+    </record>
+    
+    <record id="group_agriculture_supervisor" model="res.groups">
+        <field name="name">Agriculture: Superviseur Opérations</field>
+        <field name="category_id" ref="bsr_agri_base.module_category_agriculture"/>
+        <field name="implied_ids" eval="[(4, ref('group_agriculture_operator'))]"/>
+        <field name="comment">Planification et supervision des opérations</field>
+    </record>
+
+    <record id="group_agriculture_manager" model="res.groups">
+        <field name="name">Agriculture: Gestionnaire Opérations</field>
+        <field name="category_id" ref="bsr_agri_base.module_category_agriculture"/>
+        <field name="implied_ids" eval="[(4, ref('group_agriculture_supervisor')), (4, ref('bsr_agri_base.group_agriculture_manager'))]"/>
+        <field name="comment">Gestion complète des opérations et analyses</field>
+    </record>
+
+    <!-- Règles de sécurité par enregistrement -->
+    
+    <!-- Règle pour les opérateurs : accès aux opérations de leur équipe -->
+    <record id="culture_operation_rule_operator" model="ir.rule">
+        <field name="name">Opérations Culture: Règle Opérateur</field>
+        <field name="model_id" ref="model_bsr_culture_operation"/>
+        <field name="domain_force">[
+            '|',
+            ('responsible_id.user_id', '=', user.id),
+            ('employee_ids.user_id', '=', user.id)
+        ]</field>
+        <field name="groups" eval="[(4, ref('group_agriculture_operator'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+    
+    <!-- Règle pour les superviseurs : accès aux opérations selon les droits de la société -->
+    <record id="culture_operation_rule_supervisor" model="ir.rule">
+        <field name="name">Opérations Culture: Règle Superviseur</field>
+        <field name="model_id" ref="model_bsr_culture_operation"/>
+        <field name="domain_force">[('company_id', '=', user.company_id.id)]</field>
+        <field name="groups" eval="[(4, ref('group_agriculture_supervisor'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+    
+    <!-- Règle pour les gestionnaires : accès global -->
+    <record id="culture_operation_rule_manager" model="ir.rule">
+        <field name="name">Opérations Culture: Règle Gestionnaire</field>
+        <field name="model_id" ref="model_bsr_culture_operation"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_agriculture_manager'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
+    <!-- Règles pour les lignes de produits -->
+    <record id="operation_product_line_rule_global" model="ir.rule">
+        <field name="name">Lignes Produit Opération: Règle Globale</field>
+        <field name="model_id" ref="model_bsr_operation_product_line"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_agriculture_operator'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
+</odoo>

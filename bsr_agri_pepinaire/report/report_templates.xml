@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Template Rapport Lot de plants -->
+    <template id="report_lot_plant_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2>Fiche de lot de plants</h2>
+                        <div class="row mt32 mb32">
+                            <div class="col-6">
+                                <strong>Référence:</strong> <span t-field="o.name"/><br/>
+                                <strong>Espèce:</strong> <span t-field="o.espece_id.name"/><br/>
+                                <strong>Variété:</strong> <span t-field="o.variete_id.name"/><br/>
+                                <strong>Serre:</strong> <span t-field="o.serre_id.name"/><br/>
+                                <strong>Emplacement:</strong> <span t-field="o.emplacement"/>
+                            </div>
+                            <div class="col-6">
+                                <strong>Date de semis:</strong> <span t-field="o.date_semis"/><br/>
+                                <strong>Date de germination:</strong> <span t-field="o.date_germination"/><br/>
+                                <strong>Date de repiquage:</strong> <span t-field="o.date_repiquage"/><br/>
+                                <strong>Date de sortie prévue:</strong> <span t-field="o.date_sortie_prevue"/><br/>
+                                <strong>État:</strong> <span t-field="o.state"/>
+                            </div>
+                        </div>
+
+                        <h3>Quantités</h3>
+                        <table class="table table-sm">
+                            <tr>
+                                <td><strong>Quantité semée:</strong></td>
+                                <td><span t-field="o.quantite_semis"/></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Quantité germée:</strong></td>
+                                <td><span t-field="o.quantite_germee"/></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Taux de germination:</strong></td>
+                                <td><span t-field="o.taux_germination"/>%</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Quantité repiquée:</strong></td>
+                                <td><span t-field="o.quantite_repiquee"/></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Quantité disponible:</strong></td>
+                                <td><span t-field="o.quantite_disponible"/></td>
+                            </tr>
+                        </table>
+
+                        <h3>Interventions</h3>
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Type</th>
+                                    <th>Employé</th>
+                                    <th>Coût</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="o.intervention_ids" t-as="intervention">
+                                    <td><span t-field="intervention.date"/></td>
+                                    <td><span t-field="intervention.type_intervention"/></td>
+                                    <td><span t-field="intervention.employe_id.name"/></td>
+                                    <td><span t-field="intervention.cout"/></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="row mt32">
+                            <div class="col-6">
+                                <strong>Coût total:</strong> <span t-field="o.cout_total"/>
+                            </div>
+                            <div class="col-6">
+                                <strong>Coût unitaire:</strong> <span t-field="o.cout_unitaire"/>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+
+
+    <!-- Template Rapport Intervention -->
+    <template id="report_intervention_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2>Fiche d'intervention</h2>
+                        <div class="row mt32 mb32">
+                            <div class="col-6">
+                                <strong>Référence:</strong> <span t-field="o.name"/><br/>
+                                <strong>Date:</strong> <span t-field="o.date"/><br/>
+                                <strong>Type:</strong> <span t-field="o.type_intervention"/><br/>
+                                <strong>État:</strong> <span t-field="o.state"/>
+                            </div>
+                            <div class="col-6">
+                                <strong>Lot:</strong> <span t-field="o.lot_id.name"/><br/>
+                                <strong>Employé:</strong> <span t-field="o.employe_id.name"/><br/>
+                                <strong>Durée:</strong> <span t-field="o.duree"/> heures
+                            </div>
+                        </div>
+
+                        <div t-if="o.description" class="mt16">
+                            <strong>Description:</strong><br/>
+                            <span t-field="o.description"/>
+                        </div>
+
+                        <div t-if="o.produit_utilise" class="mt16">
+                            <strong>Produit utilisé:</strong> <span t-field="o.produit_utilise"/><br/>
+                            <strong>Quantité:</strong> <span t-field="o.quantite_produit"/> <span t-field="o.unite_produit"/>
+                        </div>
+
+                        <div class="row mt32">
+                            <div class="col-12">
+                                <table class="table table-sm">
+                                    <tr>
+                                        <td><strong>Coût main d'œuvre:</strong></td>
+                                        <td class="text-right"><span t-field="o.cout_main_oeuvre"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Coût produit:</strong></td>
+                                        <td class="text-right"><span t-field="o.cout_produit"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Coût total:</strong></td>
+                                        <td class="text-right"><strong><span t-field="o.cout"/></strong></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div t-if="o.notes" class="mt32">
+                            <strong>Notes:</strong><br/>
+                            <span t-field="o.notes"/>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

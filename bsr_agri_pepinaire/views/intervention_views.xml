@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Action Intervention (définie en premier pour être référencée) -->
+    <record id="action_pepiniere_intervention" model="ir.actions.act_window">
+        <field name="name">Interventions</field>
+        <field name="res_model">pepiniere.intervention</field>
+        <field name="view_mode">tree,calendar,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Planifier une nouvelle intervention
+            </p>
+            <p>
+                Gérez les interventions culturales sur vos lots de plants.
+            </p>
+        </field>
+    </record>
+
+    <!-- Vue formulaire Intervention -->
+    <record id="view_pepiniere_intervention_form" model="ir.ui.view">
+        <field name="name">pepiniere.intervention.form</field>
+        <field name="model">pepiniere.intervention</field>
+        <field name="arch" type="xml">
+            <form string="Intervention">
+                <header>
+                    <button name="action_en_cours" string="Démarrer" type="object" 
+                            states="planifie" class="oe_highlight"/>
+                    <button name="action_termine" string="Terminer" type="object" 
+                            states="en_cours" class="oe_highlight"/>
+                    <button name="action_annule" string="Annuler" type="object" 
+                            states="planifie,en_cours"/>
+                    <field name="state" widget="statusbar" 
+                           statusbar_visible="planifie,en_cours,termine"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="lot_id"/>
+                            <field name="date"/>
+                            <field name="type_intervention"/>
+                        </group>
+                        <group>
+                            <field name="employe_id"/>
+                            <field name="duree"/>
+                        </group>
+                    </group>
+                    <group string="Détails de l'intervention">
+                        <group>
+                            <field name="produit_utilise"/>
+                            <field name="quantite_produit"/>
+                            <field name="unite_produit"/>
+                        </group>
+                        <group>
+                            <field name="cout_main_oeuvre"/>
+                            <field name="cout_produit"/>
+                            <field name="cout"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="description" placeholder="Description de l'intervention..."/>
+                    </group>
+                    <group>
+                        <field name="notes" placeholder="Notes additionnelles..."/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Vue liste Intervention -->
+    <record id="view_pepiniere_intervention_tree" model="ir.ui.view">
+        <field name="name">pepiniere.intervention.tree</field>
+        <field name="model">pepiniere.intervention</field>
+        <field name="arch" type="xml">
+            <tree string="Interventions" decoration-success="state=='termine'" 
+                  decoration-info="state=='en_cours'" decoration-muted="state=='annule'">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="lot_id"/>
+                <field name="type_intervention"/>
+                <field name="employe_id"/>
+                <field name="duree"/>
+                <field name="cout"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Vue calendrier Intervention -->
+    <record id="view_pepiniere_intervention_calendar" model="ir.ui.view">
+        <field name="name">pepiniere.intervention.calendar</field>
+        <field name="model">pepiniere.intervention</field>
+        <field name="arch" type="xml">
+            <calendar string="Planning des interventions" date_start="date" color="type_intervention">
+                <field name="lot_id"/>
+                <field name="type_intervention"/>
+                <field name="employe_id"/>
+            </calendar>
+        </field>
+    </record>
+
+    <!-- Vue recherche Intervention -->
+    <record id="view_pepiniere_intervention_search" model="ir.ui.view">
+        <field name="name">pepiniere.intervention.search</field>
+        <field name="model">pepiniere.intervention</field>
+        <field name="arch" type="xml">
+            <search string="Rechercher intervention">
+                <field name="name"/>
+                <field name="lot_id"/>
+                <field name="employe_id"/>
+                <filter string="Planifié" name="planifie" domain="[('state', '=', 'planifie')]"/>
+                <filter string="En cours" name="en_cours" domain="[('state', '=', 'en_cours')]"/>
+                <filter string="Terminé" name="termine" domain="[('state', '=', 'termine')]"/>
+                <separator/>
+                <filter string="Aujourd'hui" name="today" domain="[('date', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter string="Cette semaine" name="week" domain="[('date', '&gt;=', (context_today() - datetime.timedelta(days=context_today().weekday())).strftime('%Y-%m-%d')), ('date', '&lt;=', (context_today() + datetime.timedelta(days=6-context_today().weekday())).strftime('%Y-%m-%d'))]"/>
+                <group expand="0" string="Grouper par">
+                    <filter string="Lot" name="group_lot" context="{'group_by': 'lot_id'}"/>
+                    <filter string="Type" name="group_type" context="{'group_by': 'type_intervention'}"/>
+                    <filter string="Employé" name="group_employe" context="{'group_by': 'employe_id'}"/>
+                    <filter string="État" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="Date" name="group_date" context="{'group_by': 'date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+</odoo>

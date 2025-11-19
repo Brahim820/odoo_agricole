@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Actions définies en premier -->
+    <record id="action_pepiniere_serre" model="ir.actions.act_window">
+        <field name="name">Serres</field>
+        <field name="res_model">pepiniere.serre</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- Vue formulaire Lot de plants -->
+    <record id="view_pepiniere_lot_plant_form" model="ir.ui.view">
+        <field name="name">pepiniere.lot.plant.form</field>
+        <field name="model">pepiniere.lot.plant</field>
+        <field name="arch" type="xml">
+            <form string="Lot de plants">
+                <header>
+                    <button name="action_germination" string="Germination" type="object" 
+                            states="semis" class="oe_highlight"/>
+                    <button name="action_repiquage" string="Repiquage" type="object" 
+                            states="germination" class="oe_highlight"/>
+                    <button name="action_croissance" string="Croissance" type="object" 
+                            states="repiquage" class="oe_highlight"/>
+                    <button name="action_pret" string="Prêt à vendre" type="object" 
+                            states="croissance" class="oe_highlight"/>
+                    <button name="action_cloture" string="Clôturer" type="object" 
+                            states="pret,vendu" class="oe_highlight"/>
+                    <field name="state" widget="statusbar" 
+                           statusbar_visible="semis,germination,repiquage,croissance,pret,vendu"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="%(action_pepiniere_intervention)d" type="action"
+                                class="oe_stat_button" icon="fa-tasks"
+                                context="{'default_lot_id': active_id}">
+                            <field name="intervention_ids" widget="statinfo" string="Interventions"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="espece_id"/>
+                            <field name="variete_id"/>
+                            <field name="serre_id"/>
+                            <field name="emplacement"/>
+                        </group>
+                        <group>
+                            <field name="date_semis"/>
+                            <field name="date_germination"/>
+                            <field name="date_repiquage"/>
+                            <field name="date_sortie_prevue"/>
+                            <field name="date_sortie_reelle"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Quantités">
+                            <field name="quantite_semis"/>
+                            <field name="quantite_germee"/>
+                            <field name="quantite_repiquee"/>
+                            <field name="quantite_disponible"/>
+                            <field name="quantite_vendue"/>
+                            <field name="taux_germination" widget="percentage"/>
+                        </group>
+                        <group string="Coûts et Prix">
+                            <field name="cout_total"/>
+                            <field name="cout_unitaire"/>
+                            <field name="prix_vente_unitaire"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Interventions">
+                            <field name="intervention_ids">
+                                <tree>
+                                    <field name="name"/>
+                                    <field name="date"/>
+                                    <field name="type_intervention"/>
+                                    <field name="employe_id"/>
+                                    <field name="cout"/>
+                                    <field name="state"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Ventes">
+                            <field name="sale_line_ids">
+                                <tree>
+                                    <field name="order_id"/>
+                                    <field name="order_partner_id"/>
+                                    <field name="product_uom_qty"/>
+                                    <field name="price_unit"/>
+                                    <field name="price_subtotal"/>
+                                    <field name="state"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Vue liste Lot de plants -->
+    <record id="view_pepiniere_lot_plant_tree" model="ir.ui.view">
+        <field name="name">pepiniere.lot.plant.tree</field>
+        <field name="model">pepiniere.lot.plant</field>
+        <field name="arch" type="xml">
+            <tree string="Lots de plants" decoration-success="state=='pret'" 
+                  decoration-info="state in ('semis','germination')" decoration-muted="state=='cloture'">
+                <field name="name"/>
+                <field name="espece_id"/>
+                <field name="variete_id"/>
+                <field name="date_semis"/>
+                <field name="quantite_disponible"/>
+                <field name="taux_germination" widget="percentage"/>
+                <field name="cout_unitaire"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Vue kanban Lot de plants -->
+    <record id="view_pepiniere_lot_plant_kanban" model="ir.ui.view">
+        <field name="name">pepiniere.lot.plant.kanban</field>
+        <field name="model">pepiniere.lot.plant</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_mobile">
+                <field name="name"/>
+                <field name="espece_id"/>
+                <field name="variete_id"/>
+                <field name="quantite_disponible"/>
+                <field name="state"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click">
+                            <div class="o_kanban_record_top">
+                                <div class="o_kanban_record_headings">
+                                    <strong class="o_kanban_record_title"><field name="name"/></strong>
+                                </div>
+                                <span class="badge badge-pill">
+                                    <field name="state"/>
+                                </span>
+                            </div>
+                            <div class="o_kanban_record_body">
+                                <field name="espece_id"/> - <field name="variete_id"/>
+                                <br/>
+                                Disponible: <field name="quantite_disponible"/>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Vue recherche Lot de plants -->
+    <record id="view_pepiniere_lot_plant_search" model="ir.ui.view">
+        <field name="name">pepiniere.lot.plant.search</field>
+        <field name="model">pepiniere.lot.plant</field>
+        <field name="arch" type="xml">
+            <search string="Rechercher lot">
+                <field name="name"/>
+                <field name="espece_id"/>
+                <field name="variete_id"/>
+                <filter string="Semis" name="semis" domain="[('state', '=', 'semis')]"/>
+                <filter string="Germination" name="germination" domain="[('state', '=', 'germination')]"/>
+                <filter string="Prêt à vendre" name="pret" domain="[('state', '=', 'pret')]"/>
+                <separator/>
+                <filter string="Disponible" name="disponible" domain="[('quantite_disponible', '>', 0)]"/>
+                <group expand="0" string="Grouper par">
+                    <filter string="Espèce" name="group_espece" context="{'group_by': 'espece_id'}"/>
+                    <filter string="Variété" name="group_variete" context="{'group_by': 'variete_id'}"/>
+                    <filter string="État" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="Date de semis" name="group_date_semis" context="{'group_by': 'date_semis'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action Lot de plants -->
+    <record id="action_pepiniere_lot_plant" model="ir.actions.act_window">
+        <field name="name">Lots de plants</field>
+        <field name="res_model">pepiniere.lot.plant</field>
+        <field name="view_mode">tree,kanban,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Créer un nouveau lot de plants
+            </p>
+            <p>
+                Gérez vos lots de production de plants.
+            </p>
+        </field>
+    </record>
+
+    <!-- Vue formulaire Serre -->
+    <record id="view_pepiniere_serre_form" model="ir.ui.view">
+        <field name="name">pepiniere.serre.form</field>
+        <field name="model">pepiniere.serre</field>
+        <field name="arch" type="xml">
+            <form string="Serre">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="code"/>
+                            <field name="type_serre"/>
+                        </group>
+                        <group>
+                            <field name="superficie"/>
+                            <field name="capacite"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Vue liste Serre -->
+    <record id="view_pepiniere_serre_tree" model="ir.ui.view">
+        <field name="name">pepiniere.serre.tree</field>
+        <field name="model">pepiniere.serre</field>
+        <field name="arch" type="xml">
+            <tree string="Serres">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="type_serre"/>
+                <field name="superficie"/>
+                <field name="capacite"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+</odoo>

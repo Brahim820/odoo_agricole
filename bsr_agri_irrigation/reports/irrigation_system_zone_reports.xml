@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Rapport Système d'Irrigation -->
+        <template id="report_irrigation_system">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="doc">
+                    <t t-call="web.basic_layout">
+                        <div class="page">
+                            <div class="oe_structure"/>
+                            
+                            <!-- En-tête du rapport -->
+                            <div class="row mb32">
+                                <div class="col-12">
+                                    <h2 class="text-center">
+                                        <strong>FICHE TECHNIQUE SYSTÈME D'IRRIGATION</strong>
+                                    </h2>
+                                    <h5 class="text-center text-muted">
+                                        Système <span t-field="doc.name"/>
+                                    </h5>
+                                </div>
+                            </div>
+
+                            <!-- Informations générales -->
+                            <div class="row mb16">
+                                <div class="col-6">
+                                    <h4><strong>Caractéristiques</strong></h4>
+                                    <table class="table table-borderless">
+                                        <tr>
+                                            <td width="40%"><strong>Type :</strong></td>
+                                            <td><span t-field="doc.irrigation_type"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Ferme :</strong></td>
+                                            <td><span t-field="doc.farm_id.name"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Débit max :</strong></td>
+                                            <td><span t-field="doc.max_flow_rate"/> L/h</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Surface couverte :</strong></td>
+                                            <td><span t-field="doc.coverage_area"/> ha</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>État :</strong></td>
+                                            <td>
+                                                <span t-field="doc.state" class="badge"
+                                                      t-attf-class="badge-{{'success' if doc.state == 'active' else 'warning' if doc.state == 'maintenance' else 'danger'}}"/>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="col-6">
+                                    <h4><strong>Spécifications</strong></h4>
+                                    <table class="table table-borderless">
+                                        <tr>
+                                            <td width="40%"><strong>Pression max :</strong></td>
+                                            <td><span t-field="doc.max_pressure"/> bar</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Efficacité hydrique :</strong></td>
+                                            <td><span t-field="doc.water_efficiency"/>%</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Équipement maintenance :</strong></td>
+                                            <td><span t-field="doc.equipment_id.name"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Date installation :</strong></td>
+                                            <td><span t-field="doc.installation_date"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Dernière maintenance :</strong></td>
+                                            <td><span t-field="doc.last_maintenance_date"/></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Zones desservies -->
+                            <div class="row mb16" t-if="doc.zone_ids">
+                                <div class="col-12">
+                                    <h4><strong>Zones Desservies</strong></h4>
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Zone</th>
+                                                <th>Culture</th>
+                                                <th class="text-center">Surface (m²)</th>
+                                                <th class="text-center">Dernière irrigation</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr t-foreach="doc.zone_ids" t-as="zone">
+                                                <td><span t-field="zone.name"/></td>
+                                                <td><span t-field="zone.crop_id.name"/></td>
+                                                <td class="text-center"><span t-field="zone.surface_area"/></td>
+                                                <td class="text-center"><span t-field="zone.last_irrigation_date"/></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="oe_structure"/>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+
+        <!-- Rapport Zone d'Irrigation -->
+        <template id="report_irrigation_zone">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="doc">
+                    <t t-call="web.basic_layout">
+                        <div class="page">
+                            <div class="oe_structure"/>
+                            
+                            <!-- En-tête du rapport -->
+                            <div class="row mb32">
+                                <div class="col-12">
+                                    <h2 class="text-center">
+                                        <strong>FICHE TECHNIQUE ZONE D'IRRIGATION</strong>
+                                    </h2>
+                                    <h5 class="text-center text-muted">
+                                        Zone <span t-field="doc.name"/>
+                                    </h5>
+                                </div>
+                            </div>
+
+                            <!-- Informations de la zone -->
+                            <div class="row mb16">
+                                <div class="col-6">
+                                    <h4><strong>Caractéristiques</strong></h4>
+                                    <table class="table table-borderless">
+                                        <tr>
+                                            <td width="40%"><strong>Ferme :</strong></td>
+                                            <td><span t-field="doc.farm_id.name"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Parcelle :</strong></td>
+                                            <td><span t-field="doc.parcel_id.name"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Culture :</strong></td>
+                                            <td><span t-field="doc.culture_id.name"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Surface :</strong></td>
+                                            <td><span t-field="doc.surface_area"/> ha</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Système :</strong></td>
+                                            <td><span t-field="doc.system_id.name"/></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="col-6">
+                                    <h4><strong>Paramètres</strong></h4>
+                                    <table class="table table-borderless">
+                                        <tr>
+                                            <td width="40%"><strong>Besoins hydrique :</strong></td>
+                                            <td><span t-field="doc.water_requirement_daily"/> L/m²/jour</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Type de sol :</strong></td>
+                                            <td><span t-field="doc.soil_type"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Pente :</strong></td>
+                                            <td><span t-field="doc.slope_percentage"/>%</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Drainage :</strong></td>
+                                            <td><span t-field="doc.drainage_capacity"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Dernière irrigation :</strong></td>
+                                            <td><span t-field="doc.last_irrigation_date"/></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="oe_structure"/>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+
+    </data>
+</odoo>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        
+        <!-- Catégorie de module -->
+        <record id="module_category_pepiniere" model="ir.module.category">
+            <field name="name">Pépinière Agricole</field>
+            <field name="description">Gestion de pépinière agricole</field>
+            <field name="sequence">20</field>
+        </record>
+
+        <!-- Groupe Utilisateur -->
+        <record id="group_pepiniere_user" model="res.groups">
+            <field name="name">Utilisateur</field>
+            <field name="category_id" ref="module_category_pepiniere"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
+        <!-- Groupe Responsable -->
+        <record id="group_pepiniere_manager" model="res.groups">
+            <field name="name">Responsable</field>
+            <field name="category_id" ref="module_category_pepiniere"/>
+            <field name="implied_ids" eval="[(4, ref('group_pepiniere_user'))]"/>
+            <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+        </record>
+
+    </data>
+</odoo>

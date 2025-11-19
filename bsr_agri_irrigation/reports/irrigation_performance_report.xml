@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Rapport Performance d'Irrigation -->
+        <template id="report_irrigation_performance">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="doc">
+                    <t t-set="sessions" t-value="docs"/>
+                    <t t-call="web.basic_layout">
+                        <div class="page">
+                            <div class="oe_structure"/>
+                            
+                            <!-- En-tête du rapport -->
+                            <div class="row mb32">
+                                <div class="col-12">
+                                    <h2 class="text-center">
+                                        <strong>RAPPORT DE PERFORMANCE D'IRRIGATION</strong>
+                                    </h2>
+                                    <h5 class="text-center text-muted">
+                                        Analyse basée sur <span t-esc="len(sessions)"/> session(s)
+                                    </h5>
+                                </div>
+                            </div>
+
+                            <!-- Indicateurs de performance globaux -->
+                            <div class="row mb16">
+                                <div class="col-12">
+                                    <h4><strong>Indicateurs de Performance Globaux</strong></h4>
+                                    <div class="row">
+                                        <div class="col-3">
+                                            <div class="card text-center">
+                                                <div class="card-body">
+                                                    <h5 class="card-title text-primary">
+                                                        <span t-esc="len(sessions.filtered(lambda s: s.state == 'completed'))"/>
+                                                    </h5>
+                                                    <p class="card-text">Sessions<br/>Terminées</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-3">
+                                            <div class="card text-center">
+                                                <div class="card-body">
+                                                    <h5 class="card-title text-success">
+                                                        <span t-esc="len(sessions.filtered(lambda s: s.result == 'success'))"/>
+                                                    </h5>
+                                                    <p class="card-text">Sessions<br/>Réussies</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-3">
+                                            <div class="card text-center">
+                                                <div class="card-body">
+                                                    <h5 class="card-title text-warning">
+                                                        <span t-esc="len(sessions.filtered(lambda s: s.result == 'partial'))"/>
+                                                    </h5>
+                                                    <p class="card-text">Sessions<br/>Partielles</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-3">
+                                            <div class="card text-center">
+                                                <div class="card-body">
+                                                    <h5 class="card-title text-danger">
+                                                        <span t-esc="len(sessions.filtered(lambda s: s.result == 'failed'))"/>
+                                                    </h5>
+                                                    <p class="card-text">Sessions<br/>Échouées</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Consommation et coûts -->
+                            <div class="row mb16">
+                                <div class="col-12">
+                                    <h4><strong>Consommation et Coûts</strong></h4>
+                                    <table class="table table-bordered">
+                                        <thead class="thead-light">
+                                            <tr>
+                                                <th></th>
+                                                <th class="text-center">Total</th>
+                                                <th class="text-center">Moyenne par session</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><strong>Volume d'eau consommé (L)</strong></td>
+                                                <td class="text-center">
+                                                    <span t-esc="'{:,.0f}'.format(sum(sessions.filtered(lambda s: s.water_consumed).mapped('water_consumed')))"/>
+                                                </td>
+                                                <td class="text-center">
+                                                    <span t-esc="'{:,.0f}'.format(sum(sessions.filtered(lambda s: s.water_consumed).mapped('water_consumed')) / len(sessions) if sessions else 0)"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Durée totale (h)</strong></td>
+                                                <td class="text-center">
+                                                    <span t-esc="'{:,.1f}'.format(sum(sessions.filtered(lambda s: s.duration_hours).mapped('duration_hours')))"/>
+                                                </td>
+                                                <td class="text-center">
+                                                    <span t-esc="'{:,.1f}'.format(sum(sessions.filtered(lambda s: s.duration_hours).mapped('duration_hours')) / len(sessions) if sessions else 0)"/>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="oe_structure"/>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+
+    </data>
+</odoo>

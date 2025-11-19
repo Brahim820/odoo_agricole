@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Vue formulaire Variété -->
+    <record id="view_pepiniere_variete_form" model="ir.ui.view">
+        <field name="name">pepiniere.variete.form</field>
+        <field name="model">pepiniere.variete</field>
+        <field name="arch" type="xml">
+            <form string="Variété">
+                <sheet>
+                    <field name="image" widget="image" class="oe_avatar"/>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Nom de la variété"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="code"/>
+                            <field name="espece_id"/>
+                        </group>
+                        <group>
+                            <field name="prix_vente_unitaire"/>
+                            <field name="cout_production_unitaire"/>
+                            <field name="rendement_moyen"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Description">
+                            <field name="description"/>
+                        </page>
+                        <page string="Caractéristiques">
+                            <group>
+                                <field name="resistance_maladies"/>
+                                <field name="particularites"/>
+                            </group>
+                        </page>
+                        <page string="Lots">
+                            <field name="lot_ids">
+                                <tree>
+                                    <field name="name"/>
+                                    <field name="date_semis"/>
+                                    <field name="quantite_disponible"/>
+                                    <field name="state"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Vue liste Variété -->
+    <record id="view_pepiniere_variete_tree" model="ir.ui.view">
+        <field name="name">pepiniere.variete.tree</field>
+        <field name="model">pepiniere.variete</field>
+        <field name="arch" type="xml">
+            <tree string="Variétés">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="espece_id"/>
+                <field name="prix_vente_unitaire"/>
+                <field name="lot_count"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Vue recherche Variété -->
+    <record id="view_pepiniere_variete_search" model="ir.ui.view">
+        <field name="name">pepiniere.variete.search</field>
+        <field name="model">pepiniere.variete</field>
+        <field name="arch" type="xml">
+            <search string="Rechercher variété">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="espece_id"/>
+                <filter string="Actif" name="active" domain="[('active', '=', True)]"/>
+                <filter string="Inactif" name="inactive" domain="[('active', '=', False)]"/>
+                <group expand="0" string="Grouper par">
+                    <filter string="Espèce" name="group_espece" context="{'group_by': 'espece_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action Variété -->
+    <record id="action_pepiniere_variete" model="ir.actions.act_window">
+        <field name="name">Variétés</field>
+        <field name="res_model">pepiniere.variete</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'search_default_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Créer une nouvelle variété
+            </p>
+            <p>
+                Définissez les variétés de plants que vous produisez.
+            </p>
+        </field>
+    </record>
+
+</odoo>

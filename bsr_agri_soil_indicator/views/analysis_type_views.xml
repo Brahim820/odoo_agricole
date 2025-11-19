@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Vue formulaire Type d'analyse -->
+        <record id="view_analysis_type_form" model="ir.ui.view">
+            <field name="name">bsr.analysis.type.form</field>
+            <field name="model">bsr.analysis.type</field>
+            <field name="arch" type="xml">
+                <form string="Type d'analyse">
+                    <header>
+                        <field name="active" widget="boolean_toggle" options="{'autosave': False}"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_view_parameters" type="object"
+                                    class="oe_stat_button" icon="fa-list-ul">
+                                <field name="parameter_count" widget="statinfo" string="Paramètres"/>
+                            </button>
+                        </div>
+                        
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" placeholder="Nom du type d'analyse"/>
+                            </h1>
+                            <h2>
+                                <field name="code" placeholder="Code"/>
+                            </h2>
+                        </div>
+                        
+                        <group>
+                            <group>
+                                <field name="category"/>
+                                <field name="analysis_class"/>
+                                <field name="sequence"/>
+                            </group>
+                            <group>
+                                <field name="recommended_frequency"/>
+                                <field name="estimated_duration_days"/>
+                                <field name="company_id" groups="base.group_multi_company"/>
+                            </group>
+                        </group>
+                        
+                        <group string="Coût estimé">
+                            <group>
+                                <label for="estimated_cost"/>
+                                <div class="o_row">
+                                    <field name="estimated_cost"/>
+                                    <field name="currency_id" options="{'no_open': True}"/>
+                                </div>
+                            </group>
+                        </group>
+                        
+                        <notebook>
+                            <page string="Description">
+                                <field name="description" placeholder="Description du type d'analyse..."/>
+                            </page>
+                            <page string="Paramètres" name="parameters">
+                                <field name="parameter_ids">
+                                    <tree editable="bottom">
+                                        <field name="sequence" widget="handle"/>
+                                        <field name="name"/>
+                                        <field name="code"/>
+                                        <field name="data_type"/>
+                                        <field name="uom_id"/>
+                                        <field name="alert_enabled"/>
+                                        <field name="active"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Vue liste Type d'analyse -->
+        <record id="view_analysis_type_tree" model="ir.ui.view">
+            <field name="name">bsr.analysis.type.tree</field>
+            <field name="model">bsr.analysis.type</field>
+            <field name="arch" type="xml">
+                <tree string="Types d'analyse" default_order="sequence,name">
+                    <field name="sequence" widget="handle"/>
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="category"/>
+                    <field name="analysis_class"/>
+                    <field name="recommended_frequency"/>
+                    <field name="parameter_count"/>
+                    <field name="estimated_cost"/>
+                    <field name="currency_id" groups="base.group_multi_company"/>
+                    <field name="active"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Vue kanban Type d'analyse -->
+        <record id="view_analysis_type_kanban" model="ir.ui.view">
+            <field name="name">bsr.analysis.type.kanban</field>
+            <field name="model">bsr.analysis.type</field>
+            <field name="arch" type="xml">
+                <kanban string="Types d'analyse" default_group_by="category">
+                    <field name="id"/>
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="category"/>
+                    <field name="analysis_class"/>
+                    <field name="parameter_count"/>
+                    <field name="estimated_cost"/>
+                    <field name="currency_id"/>
+                    <field name="color"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div t-attf-class="oe_kanban_color_#{kanban_getcolor(record.color.raw_value)} oe_kanban_card oe_kanban_global_click">
+                                <div class="oe_kanban_content">
+                                    <div class="o_kanban_record_top">
+                                        <div class="o_kanban_record_headings">
+                                            <strong class="o_kanban_record_title">
+                                                <field name="name"/>
+                                            </strong>
+                                            <div class="o_kanban_record_subtitle">
+                                                <field name="code"/> - <field name="analysis_class"/>
+                                            </div>
+                                        </div>
+                                        <div class="o_dropdown_kanban dropdown">
+                                            <a role="button" class="dropdown-toggle o-no-caret btn" data-toggle="dropdown" href="#" aria-label="Dropdown menu" title="Dropdown menu">
+                                                <span class="fa fa-ellipsis-v"/>
+                                            </a>
+                                            <div class="dropdown-menu" role="menu">
+                                                <a name="action_view_parameters" type="object" role="menuitem" class="dropdown-item">Voir paramètres</a>
+                                                <div class="dropdown-divider"/>
+                                                <div class="dropdown-item-text text-muted">Couleur</div>
+                                                <ul class="oe_kanban_colorpicker" data-field="color"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="o_kanban_record_body">
+                                        <div class="o_kanban_tags_section">
+                                            <span class="o_kanban_tag">
+                                                <i class="fa fa-list-ul"/> <t t-esc="record.parameter_count.value"/> paramètres
+                                            </span>
+                                        </div>
+                                        <div class="o_kanban_record_bottom">
+                                            <div class="oe_kanban_bottom_left">
+                                                <span t-if="record.estimated_cost.value">
+                                                    <t t-esc="record.estimated_cost.value"/> <t t-esc="record.currency_id.value"/>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- Vue recherche Type d'analyse -->
+        <record id="view_analysis_type_search" model="ir.ui.view">
+            <field name="name">bsr.analysis.type.search</field>
+            <field name="model">bsr.analysis.type</field>
+            <field name="arch" type="xml">
+                <search string="Rechercher types d'analyse">
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="description"/>
+                    <separator/>
+                    <filter string="Actifs" name="filter_active" domain="[('active', '=', True)]"/>
+                    <filter string="Inactifs" name="filter_inactive" domain="[('active', '=', False)]"/>
+                    <separator/>
+                    <filter string="Sol" name="filter_soil" domain="[('category', '=', 'soil')]"/>
+                    <filter string="Culture" name="filter_culture" domain="[('category', '=', 'culture')]"/>
+                    <filter string="Eau" name="filter_water" domain="[('category', '=', 'water')]"/>
+                    <filter string="Récolte" name="filter_harvest" domain="[('category', '=', 'harvest')]"/>
+                    <separator/>
+                    <filter string="Physique" name="filter_physical" domain="[('analysis_class', '=', 'physical')]"/>
+                    <filter string="Chimique" name="filter_chemical" domain="[('analysis_class', '=', 'chemical')]"/>
+                    <filter string="Biologique" name="filter_biological" domain="[('analysis_class', '=', 'biological')]"/>
+                    <separator/>
+                    <group expand="0" string="Grouper par">
+                        <filter string="Catégorie" name="group_category" context="{'group_by': 'category'}"/>
+                        <filter string="Classe d'analyse" name="group_analysis_class" context="{'group_by': 'analysis_class'}"/>
+                        <filter string="Fréquence recommandée" name="group_frequency" context="{'group_by': 'recommended_frequency'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Action Type d'analyse -->
+        <record id="action_analysis_type" model="ir.actions.act_window">
+            <field name="name">Types d'analyse</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">bsr.analysis.type</field>
+            <field name="view_mode">kanban,tree,form</field>
+            <field name="context">{'search_default_filter_active': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Créer un nouveau type d'analyse
+                </p>
+                <p>
+                    Les types d'analyse définissent les catégories d'analyses disponibles
+                    (sol, culture, eau, etc.) avec leurs paramètres associés.
+                </p>
+            </field>
+        </record>
+
+    </data>
+</odoo>

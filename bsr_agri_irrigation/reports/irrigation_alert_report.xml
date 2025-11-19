@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Rapport Alertes d'Irrigation -->
+        <template id="report_irrigation_alert">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="doc">
+                    <t t-call="web.basic_layout">
+                        <div class="page">
+                            <div class="oe_structure"/>
+                            
+                            <!-- En-tête du rapport -->
+                            <div class="row mb32">
+                                <div class="col-12">
+                                    <h2 class="text-center">
+                                        <strong>RAPPORT D'ALERTE D'IRRIGATION</strong>
+                                    </h2>
+                                    <h5 class="text-center text-muted">
+                                        Alerte <span t-field="doc.code"/>
+                                    </h5>
+                                </div>
+                            </div>
+
+                            <!-- Informations de l'alerte -->
+                            <div class="row mb16">
+                                <div class="col-6">
+                                    <h4><strong>Détails de l'Alerte</strong></h4>
+                                    <table class="table table-borderless">
+                                        <tr>
+                                            <td width="40%"><strong>Type :</strong></td>
+                                            <td><span t-field="doc.alert_type"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Priorité :</strong></td>
+                                            <td>
+                                                <span t-field="doc.priority" class="badge"
+                                                      t-attf-class="badge-{{'danger' if doc.priority in ['critical', 'emergency'] else 'warning' if doc.priority == 'medium' else 'info'}}"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>État :</strong></td>
+                                            <td>
+                                                <span t-field="doc.state" class="badge"
+                                                      t-attf-class="badge-{{'success' if doc.state == 'resolved' else 'warning' if doc.state == 'acknowledged' else 'danger'}}"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Date création :</strong></td>
+                                            <td><span t-field="doc.create_date" t-options="{'widget': 'datetime'}"/></td>
+                                        </tr>
+                                        <tr t-if="doc.write_date and doc.state == 'resolved'">
+                                            <td><strong>Date résolution :</strong></td>
+                                            <td><span t-field="doc.write_date" t-options="{'widget': 'datetime'}"/></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="col-6">
+                                    <h4><strong>Contexte</strong></h4>
+                                    <table class="table table-borderless">
+                                        <tr t-if="doc.session_id">
+                                            <td width="40%"><strong>Session :</strong></td>
+                                            <td><span t-field="doc.session_id.sequence"/></td>
+                                        </tr>
+                                        <tr t-if="doc.system_id">
+                                            <td><strong>Système :</strong></td>
+                                            <td><span t-field="doc.system_id.name"/></td>
+                                        </tr>
+                                        <tr t-if="doc.zone_id">
+                                            <td><strong>Zone :</strong></td>
+                                            <td><span t-field="doc.zone_id.name"/></td>
+                                        </tr>
+                                        <tr t-if="doc.farm_id">
+                                            <td><strong>Ferme :</strong></td>
+                                            <td><span t-field="doc.farm_id.name"/></td>
+                                        </tr>
+                                        <tr t-if="doc.create_uid">
+                                            <td><strong>Créé par :</strong></td>
+                                            <td><span t-field="doc.create_uid.name"/></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Message et description -->
+                            <div class="row mb16">
+                                <div class="col-12">
+                                    <h4><strong>Message d'Alerte</strong></h4>
+                                    <div class="alert alert-warning">
+                                        <h5><strong><span t-field="doc.title"/></strong></h5>
+                                        <p t-if="doc.description"><span t-field="doc.description"/></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Actions et résolution -->
+                            <div class="row mb16" t-if="doc.resolution_notes">
+                                <div class="col-12">
+                                    <h4><strong>Résolution</strong></h4>
+                                    
+                                    <div t-if="doc.resolution_notes">
+                                        <h5><strong>Notes de résolution :</strong></h5>
+                                        <div class="well">
+                                            <span t-field="doc.resolution_notes"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="oe_structure"/>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+
+    </data>
+</odoo>

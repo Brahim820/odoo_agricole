@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Séquences pour les analyses -->
+        <record id="seq_soil_analysis" model="ir.sequence">
+            <field name="name">Analyse de Sol</field>
+            <field name="code">bsr.soil.analysis</field>
+            <field name="prefix">AS</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <record id="seq_culture_analysis" model="ir.sequence">
+            <field name="name">Analyse de Culture</field>
+            <field name="code">bsr.culture.analysis</field>
+            <field name="prefix">AC</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+    </data>
+</odoo>

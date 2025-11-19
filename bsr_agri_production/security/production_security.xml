@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        
+        <!-- ========== GROUPES DE SÉCURITÉ ========== -->
+        
+        <!-- Groupe Manager - Accès complet -->
+        <record id="group_production_manager" model="res.groups">
+            <field name="name">Production Manager</field>
+            <field name="category_id" ref="base.module_category_agriculture"/>
+            <field name="comment">Accès complet aux fonctionnalités de production agricole</field>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+        
+        <!-- Groupe Supervisor - Lecture/écriture limitée -->
+        <record id="group_farm_supervisor" model="res.groups">
+            <field name="name">Farm Supervisor</field>
+            <field name="category_id" ref="base.module_category_agriculture"/>
+            <field name="comment">Gestion des productions de sa ferme uniquement</field>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+        
+        <!-- Groupe Operator - Saisie terrain -->
+        <record id="group_field_operator" model="res.groups">
+            <field name="name">Field Operator</field>
+            <field name="category_id" ref="base.module_category_agriculture"/>
+            <field name="comment">Saisie des activités terrain et mise à jour cycles</field>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+        
+        <!-- Groupe Analyst - Consultation analyses -->
+        <record id="group_analyst" model="res.groups">
+            <field name="name">Production Analyst</field>
+            <field name="category_id" ref="base.module_category_agriculture"/>
+            <field name="comment">Consultation des analyses et rapports de production</field>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
+        <!-- ========== RÈGLES D'ACCÈS RECORD ========== -->
+        
+        <!-- Règle Manager : Accès complet -->
+        <record id="rule_production_manager_all" model="ir.rule">
+            <field name="name">Production Manager: Access All Records</field>
+            <field name="model_id" ref="model_bsr_production_campaign"/>
+            <field name="groups" eval="[(4, ref('group_production_manager'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+            <field name="domain_force">[(1,'=',1)]</field>
+        </record>
+        
+        <record id="rule_cycle_production_manager_all" model="ir.rule">
+            <field name="name">Production Manager: Access All Cycles</field>
+            <field name="model_id" ref="model_bsr_production_cycle"/>
+            <field name="groups" eval="[(4, ref('group_production_manager'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+            <field name="domain_force">[(1,'=',1)]</field>
+        </record>
+        
+        <!-- Règle Supervisor : Accès limité à sa ferme (via partner_id) -->
+        <record id="rule_production_supervisor_own_farm" model="ir.rule">
+            <field name="name">Farm Supervisor: Own Farm Only</field>
+            <field name="model_id" ref="model_bsr_production_campaign"/>
+            <field name="groups" eval="[(4, ref('group_farm_supervisor'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+            <field name="domain_force">[('farm_id.partner_id.user_ids','in',[user.id])]</field>
+        </record>
+        
+        <record id="rule_cycle_supervisor_own_farm" model="ir.rule">
+            <field name="name">Farm Supervisor: Own Farm Cycles Only</field>
+            <field name="model_id" ref="model_bsr_production_cycle"/>
+            <field name="groups" eval="[(4, ref('group_farm_supervisor'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+            <field name="domain_force">[('farm_id.partner_id.user_ids','in',[user.id])]</field>
+        </record>
+        
+        <!-- Règle Operator : Lecture et mise à jour cycles seulement -->
+        <record id="rule_production_operator_read" model="ir.rule">
+            <field name="name">Field Operator: Read Own Farm Campaigns</field>
+            <field name="model_id" ref="model_bsr_production_campaign"/>
+            <field name="groups" eval="[(4, ref('group_field_operator'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+            <field name="domain_force">[('farm_id.partner_id.user_ids','in',[user.id])]</field>
+        </record>
+        
+        <record id="rule_cycle_operator_update" model="ir.rule">
+            <field name="name">Field Operator: Update Own Farm Cycles</field>
+            <field name="model_id" ref="model_bsr_production_cycle"/>
+            <field name="groups" eval="[(4, ref('group_field_operator'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+            <field name="domain_force">[('farm_id.partner_id.user_ids','in',[user.id])]</field>
+        </record>
+        
+        <!-- Règle Analyst : Lecture seule -->
+        <record id="rule_production_analyst_read" model="ir.rule">
+            <field name="name">Analyst: Read All Campaigns</field>
+            <field name="model_id" ref="model_bsr_production_campaign"/>
+            <field name="groups" eval="[(4, ref('group_analyst'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+            <field name="domain_force">[(1,'=',1)]</field>
+        </record>
+        
+        <record id="rule_cycle_analyst_read" model="ir.rule">
+            <field name="name">Analyst: Read All Cycles</field>
+            <field name="model_id" ref="model_bsr_production_cycle"/>
+            <field name="groups" eval="[(4, ref('group_analyst'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+            <field name="domain_force">[(1,'=',1)]</field>
+        </record>
+
+    </data>
+</odoo>

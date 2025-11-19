@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Vue formulaire alerte d'irrigation -->
+        <record id="view_irrigation_alert_form" model="ir.ui.view">
+            <field name="name">bsr.irrigation.alert.form</field>
+            <field name="model">bsr.irrigation.alert</field>
+            <field name="arch" type="xml">
+                <form string="Alerte d'irrigation">
+                    <header>
+                        <button name="action_acknowledge" string="Prendre en charge" type="object" 
+                                class="oe_highlight" states="active"/>
+                        <button name="action_resolve" string="Résoudre" type="object" 
+                                class="btn-success" states="acknowledged"/>
+                        <button name="action_escalate" string="Escalader" type="object" 
+                                class="btn-warning" states="acknowledged"/>
+                        <button name="action_dismiss" string="Ignorer" type="object" states="active,acknowledged"/>
+                        <button name="%(action_report_irrigation_alert)d" string="Rapport Alerte" 
+                                type="action" class="btn-secondary" icon="fa-print"/>
+                        <field name="state" widget="statusbar" statusbar_visible="active,acknowledged,resolved"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_create_maintenance_request" type="object" class="oe_stat_button" 
+                                    icon="fa-wrench" attrs="{'invisible': [('alert_type', '!=', 'equipment')]}">
+                                <div class="o_field_widget o_stat_info">
+                                    <span class="o_stat_text">Créer</span>
+                                    <span class="o_stat_text">Maintenance</span>
+                                </div>
+                            </button>
+                            <button name="action_view_session" type="object" class="oe_stat_button" 
+                                    icon="fa-play" attrs="{'invisible': [('session_id', '=', False)]}">
+                                <div class="o_field_widget o_stat_info">
+                                    <span class="o_stat_text">Session</span>
+                                </div>
+                            </button>
+                        </div>
+                        
+                        <div class="alert alert-danger" role="alert" 
+                             attrs="{'invisible': [('priority', '!=', 'critical')]}">
+                            <strong><i class="fa fa-exclamation-triangle"/> ALERTE CRITIQUE</strong>
+                        </div>
+                        
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only"/>
+                            <h1><field name="name" placeholder="Titre de l'alerte"/></h1>
+                        </div>
+                        
+                        <group>
+                            <group string="Classification">
+                                <field name="alert_type"/>
+                                <field name="priority" widget="priority"/>
+                                <field name="priority_score" readonly="1"/>
+                                <field name="description"/>
+                            </group>
+                            <group string="Contexte">
+                                <field name="farm_id" readonly="1"/>
+                                <field name="zone_id"/>
+                                <field name="system_id"/>
+                                <field name="session_id"/>
+                                <field name="program_id"/>
+                            </group>
+                        </group>
+                        
+                        <group>
+                            <group string="Temporalité">
+                                <field name="detected_datetime" readonly="1"/>
+                                <field name="acknowledged_datetime" readonly="1"/>
+                                <field name="resolved_datetime" readonly="1"/>
+                                <field name="response_time" readonly="1"/>
+                                <field name="resolution_time" readonly="1"/>
+                            </group>
+                            <group string="Assignation">
+                                <field name="assigned_user_id"/>
+                                <field name="acknowledged_by" readonly="1"/>
+                                <field name="resolved_by" readonly="1"/>
+                                <field name="resolution_time" readonly="1"/>
+                            </group>
+                        </group>
+                        
+                        <notebook>
+                            <page string="Description" name="description">
+                                <field name="description" placeholder="Description détaillée de l'alerte"/>
+                            </page>
+                            <page string="Conditions déclenchantes" name="conditions">
+                                <group>
+                                    <group string="Seuils">
+                                        <field name="trigger_condition"/>
+                                        <field name="trigger_value"/>
+                                        <field name="threshold_value"/>
+                                    </group>
+                                    <group string="Action recommandée">
+                                        <field name="recommended_action"/>
+                                        <field name="action_taken"/>
+                                    </group>
+                                </group>
+                            </page>
+                            <page string="Actions et résolution" name="actions">
+                                <field name="resolution_notes" placeholder="Notes de résolution"/>
+                            </page>
+                            <page string="Récurrence et suivi" name="tracking">
+                                <group>
+                                    <field name="recurrence_count" readonly="1"/>
+                                    <field name="email_sent" readonly="1"/>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="activity_ids" widget="mail_activity"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- Vue tree alerte d'irrigation -->
+        <record id="view_irrigation_alert_tree" model="ir.ui.view">
+            <field name="name">bsr.irrigation.alert.tree</field>
+            <field name="model">bsr.irrigation.alert</field>
+            <field name="arch" type="xml">
+                <tree string="Alertes d'irrigation" decoration-danger="priority=='critical'" 
+                      decoration-warning="priority=='high'" decoration-info="state=='active'" 
+                      decoration-success="state=='resolved'" decoration-muted="state=='dismissed'">
+                    <field name="detected_datetime"/>
+                    <field name="name"/>
+                    <field name="alert_type"/>
+                    <field name="priority" widget="priority"/>
+                    <field name="priority_score"/>
+                    <field name="zone_id"/>
+                    <field name="system_id"/>
+                    <field name="assigned_user_id"/>
+                    <field name="resolved_datetime"/>
+                    <field name="state" decoration-success="state=='resolved'" decoration-warning="state=='acknowledged'"/>
+                    <field name="trigger_condition"/>
+                    <button name="action_acknowledge" type="object" icon="fa-hand-paper-o" string="Prendre en charge" 
+                            attrs="{'invisible': [('state', '!=', 'active')]}"/>
+                    <button name="action_resolve" type="object" icon="fa-check" string="Résoudre" 
+                            attrs="{'invisible': [('state', '!=', 'acknowledged')]}"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Vue kanban alerte d'irrigation -->
+        <record id="view_irrigation_alert_kanban" model="ir.ui.view">
+            <field name="name">bsr.irrigation.alert.kanban</field>
+            <field name="model">bsr.irrigation.alert</field>
+            <field name="arch" type="xml">
+                <kanban default_group_by="priority" class="o_kanban_small_column">
+                    <field name="name"/>
+                    <field name="alert_type"/>
+                    <field name="priority"/>
+                    <field name="alert_type"/>
+                    <field name="state"/>
+                    <field name="zone_id"/>
+                    <field name="assigned_user_id"/>
+                    <field name="detected_datetime"/>
+                    <field name="resolved_datetime"/>
+                    <field name="priority_score"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_card oe_kanban_global_click" 
+                                 t-att-class="record.priority.raw_value === 'critical' ? 'border border-danger' : record.priority.raw_value === 'high' ? 'border border-warning' : ''">
+                                <div class="oe_kanban_content">
+                                    <div class="o_kanban_record_top">
+                                        <div class="o_kanban_record_headings">
+                                            <strong class="o_kanban_record_title">
+                                                <field name="name"/>
+                                            </strong>
+                                        </div>
+                                        <span class="oe_kanban_list_many2one">
+                                            <field name="zone_id"/>
+                                        </span>
+                                    </div>
+                                    <div class="o_kanban_record_body">
+                                        <div class="d-flex">
+                                            <span class="badge badge-pill" t-att-class="record.alert_type.raw_value === 'equipment' ? 'badge-danger' : record.alert_type.raw_value === 'water' ? 'badge-info' : 'badge-warning'">
+                                                <field name="alert_type"/>
+                                            </span>
+                                            <span class="badge badge-pill badge-light ml-1">
+                                                <field name="priority_score"/>
+                                            </span>
+                                        </div>
+                                        <br/>
+                                        <i class="fa fa-clock-o"/> <field name="detected_datetime"/>
+                                        <br/>
+                                        <t t-if="record.resolved_datetime.value">
+                                            <i class="fa fa-calendar"/> Résolu: <field name="resolved_datetime"/>
+                                            <br/>
+                                        </t>
+                                        <t t-if="record.assigned_user_id.value">
+                                            <i class="fa fa-user"/> <field name="assigned_user_id"/>
+                                        </t>
+                                    </div>
+                                    <div class="o_kanban_record_bottom">
+                                        <div class="oe_kanban_bottom_left">
+                                            <span class="badge" t-att-class="record.state.raw_value === 'resolved' ? 'badge-success' : record.state.raw_value === 'acknowledged' ? 'badge-warning' : 'badge-secondary'">
+                                                <field name="state"/>
+                                            </span>
+                                        </div>
+                                        <div class="oe_kanban_bottom_right">
+                                            <button name="action_acknowledge" type="object" 
+                                                    class="btn btn-sm btn-primary" title="Prendre en charge" 
+                                                    t-if="record.state.raw_value === 'active'">
+                                                <i class="fa fa-hand-paper-o"/>
+                                            </button>
+                                            <button name="action_resolve" type="object" 
+                                                    class="btn btn-sm btn-success" title="Résoudre" 
+                                                    t-if="record.state.raw_value === 'acknowledged'">
+                                                <i class="fa fa-check"/>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- Vue search alerte d'irrigation -->
+        <record id="view_irrigation_alert_search" model="ir.ui.view">
+            <field name="name">bsr.irrigation.alert.search</field>
+            <field name="model">bsr.irrigation.alert</field>
+            <field name="arch" type="xml">
+                <search string="Recherche alertes d'irrigation">
+                    <field name="name"/>
+                    <field name="zone_id"/>
+                    <field name="system_id"/>
+                    <field name="assigned_user_id"/>
+                    <field name="farm_id"/>
+                    <separator/>
+                    <filter string="Actives" name="active" domain="[('state', '=', 'active')]"/>
+                    <filter string="Prises en charge" name="acknowledged" domain="[('state', '=', 'acknowledged')]"/>
+                    <filter string="Résolues" name="resolved" domain="[('state', '=', 'resolved')]"/>
+                    <filter string="Ignorées" name="dismissed" domain="[('state', '=', 'dismissed')]"/>
+                    <separator/>
+                    <filter string="Critiques" name="critical" domain="[('priority', '=', 'critical')]"/>
+                    <filter string="Haute priorité" name="high" domain="[('priority', '=', 'high')]"/>
+                    <filter string="Priorité normale" name="normal" domain="[('priority', '=', 'normal')]"/>
+                    <separator/>
+                    <filter string="Équipement" name="equipment" domain="[('alert_type', '=', 'equipment')]"/>
+                    <filter string="Eau" name="water" domain="[('alert_type', '=', 'water')]"/>
+                    <filter string="Météo" name="weather" domain="[('alert_type', '=', 'weather')]"/>
+                    <filter string="Performance" name="performance" domain="[('alert_type', '=', 'performance')]"/>
+                    <filter string="Système" name="system" domain="[('alert_type', '=', 'system')]"/>
+                    <separator/>
+                    <filter string="Auto-générées" name="auto_generated" domain="[('trigger_condition', '!=', False)]"/>
+                    <separator/>
+                    <filter string="Mes alertes" name="my_alerts" domain="[('assigned_user_id', '=', uid)]"/>
+                    <filter string="Non assignées" name="unassigned" domain="[('assigned_user_id', '=', False)]"/>
+                    <separator/>
+                    <filter string="Aujourd'hui" name="today" 
+                            domain="[('detected_datetime', '&gt;=', (datetime.date.today()).strftime('%Y-%m-%d')), ('detected_datetime', '&lt;', (datetime.date.today() + datetime.timedelta(days=1)).strftime('%Y-%m-%d'))]"/>
+                    <filter string="Cette semaine" name="this_week" 
+                            domain="[('detected_datetime', '&gt;=', (datetime.date.today() - datetime.timedelta(days=7)).strftime('%Y-%m-%d'))]"/>
+                    <separator/>
+                    <group expand="0" string="Grouper par">
+                        <filter string="État" name="group_state" context="{'group_by': 'state'}"/>
+                        <filter string="Priorité" name="group_priority" context="{'group_by': 'priority'}"/>
+                        <filter string="Type" name="group_type" context="{'group_by': 'alert_type'}"/>
+                        <filter string="Zone" name="group_zone" context="{'group_by': 'zone_id'}"/>
+                        <filter string="Système" name="group_system" context="{'group_by': 'system_id'}"/>
+                        <filter string="Assigné à" name="group_assigned" context="{'group_by': 'assigned_user_id'}"/>
+                        <filter string="Date détection" name="group_created" context="{'group_by': 'detected_datetime:day'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Action pour alertes d'irrigation -->
+        <record id="action_irrigation_alert" model="ir.actions.act_window">
+            <field name="name">Alertes d'irrigation</field>
+            <field name="res_model">bsr.irrigation.alert</field>
+            <field name="view_mode">kanban,tree,form</field>
+            <field name="context">{'search_default_new': 1, 'search_default_acknowledged': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Aucune alerte d'irrigation !
+                </p>
+                <p>
+                    Les alertes sont générées automatiquement lors de problèmes détectés
+                    ou peuvent être créées manuellement pour signaler des anomalies.
+                </p>
+            </field>
+        </record>
+
+        <!-- Action pour alertes critiques -->
+        <record id="action_irrigation_alert_critical" model="ir.actions.act_window">
+            <field name="name">Alertes critiques</field>
+            <field name="res_model">bsr.irrigation.alert</field>
+            <field name="view_mode">kanban,tree,form</field>
+            <field name="domain">[('priority', '=', 'critical'), ('state', 'in', ['active', 'acknowledged'])]</field>
+            <field name="context">{'search_default_critical': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Aucune alerte critique !
+                </p>
+                <p>
+                    Les alertes critiques nécessitent une attention immédiate.
+                </p>
+            </field>
+        </record>
+
+    </data>
+</odoo>

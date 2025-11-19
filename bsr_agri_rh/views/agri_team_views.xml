@@ -1,0 +1,372 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Vue Formulaire Équipe Agricole -->
+        <record id="view_bsr_agri_team_form" model="ir.ui.view">
+            <field name="name">bsr.agri.team.form</field>
+            <field name="model">bsr.agri.team</field>
+            <field name="arch" type="xml">
+                <form string="Équipe Agricole">
+                    <header>
+                        <button name="action_activate" type="object" string="Activer"
+                                attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('active', '=', True)]}"
+                                class="oe_highlight" />
+                        <button name="action_deactivate" type="object" string="Désactiver"
+                                attrs="{'invisible': [('state', '!=', 'active')]}" />
+                        <button name="action_archive" type="object" string="Archiver"
+                                attrs="{'invisible': [('state', '=', 'archived')]}" />
+                        <field name="state" widget="statusbar" statusbar_visible="draft,active,archived" />
+                    </header>
+                    
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button type="object" name="action_view_assignments" class="oe_stat_button" icon="fa-tasks">
+                                <field name="assignment_count" widget="statbutton" string="Affectations"/>
+                            </button>
+                        </div>
+                        
+                        <widget name="web_ribbon" title="Archivée" bg_color="bg-danger" 
+                                attrs="{'invisible': [('state', '!=', 'archived')]}" />
+                        
+                        <field name="image_128" widget="image" class="oe_avatar" />
+                        
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" placeholder="Nom de l'équipe..." />
+                            </h1>
+                            <div>
+                                <field name="code" placeholder="Code équipe..." />
+                            </div>
+                        </div>
+                        
+                        <group>
+                            <group>
+                                <field name="team_type" />
+                                <field name="company_id" options="{'no_create': True}" groups="base.group_multi_company" />
+                                <field name="active" invisible="1" />
+                            </group>
+                            <group>
+                                <field name="leader_id" options="{'no_create': True}" />
+                                <field name="max_concurrent_operations" />
+                            </group>
+                            <group>
+                                <field name="member_count" />
+                                <field name="current_operations_count" />
+                            </group>
+                        </group>
+                        
+                        <notebook>
+                            <!-- Onglet Membres -->
+                            <page string="Membres" name="members">
+                                <group>
+                                    <group>
+                                        <field name="member_count" />
+                                        <field name="hourly_cost" />
+                                    </group>
+                                    <group>
+                                        <field name="total_operations_count" />
+                                        <field name="avg_performance_rating" widget="progressbar" />
+                                    </group>
+                                </group>
+                                
+                                <field name="member_ids" nolabel="1">
+                                    <tree editable="bottom">
+                                        <field name="name" />
+                                        <field name="job_title" />
+                                        <field name="mobile_phone" />
+                                        <field name="work_email" />
+                                        <field name="employee_skill_ids" widget="many2many_tags" />
+                                    </tree>
+                                </field>
+                            </page>
+                            
+                            <!-- Onglet Compétences -->
+                            <page string="Compétences" name="skills">
+                                <group>
+                                    <field name="required_skill_ids" widget="many2many_tags"
+                                           domain="[('skill_type_id.name', 'in', ['Agriculture', 'Machinery', 'Livestock'])]" />
+                                </group>
+                                
+                                <separator string="Compétences disponibles dans l'équipe" />
+                                <field name="team_skill_ids" nolabel="1" readonly="1">
+                                    <tree>
+                                        <field name="name" />
+                                        <field name="skill_type_id" />
+                                    </tree>
+                                </field>
+                            </page>
+                            
+                            <!-- Onglet Configuration -->
+                            <page string="Configuration" name="configuration">
+                                <group>
+                                    <group>
+                                        <field name="work_schedule" />
+                                        <field name="max_concurrent_operations" />
+                                    </group>
+                                    <group>
+                                        <field name="active_period" />
+                                        <field name="start_date" />
+                                        <field name="end_date" />
+                                    </group>
+                                </group>
+                                
+                                <separator string="Assignation géographique" />
+                                <field name="farm_ids" widget="many2many_tags" />
+                            </page>
+                            
+                            <!-- Onglet Performance -->
+                            <page string="Performance" name="performance">
+                                <group>
+                                    <group>
+                                        <field name="avg_performance_rating" widget="progressbar" />
+                                        <field name="current_operations_count" />
+                                    </group>
+                                    <group>
+                                        <field name="total_operations_count" />
+                                        <field name="estimated_monthly_cost" />
+                                    </group>
+                                </group>
+                                
+                                <separator string="Planning" />
+                                <group>
+                                    <group>
+                                        <field name="work_schedule" />
+                                        <field name="max_concurrent_operations" />
+                                    </group>
+                                    <group>
+                                        <field name="active_period" />
+                                        <field name="start_date" />
+                                        <field name="end_date" />
+                                    </group>
+                                </group>
+                            </page>
+                            
+                            <!-- Onglet Planning -->
+                            <page string="Planning" name="planning">
+                                <group>
+                                    <field name="description" nolabel="1" placeholder="Notes et informations sur l'équipe..." />
+                                </group>
+                                
+                                <div class="oe_clear mt16">
+                                    <button name="action_view_assignments" type="object" 
+                                            string="Voir les affectations" 
+                                            class="btn-primary" 
+                                            icon="fa-tasks" />
+                                </div>
+                            </page>
+                            
+                            <!-- Onglet Notes -->
+                            <page string="Informations" name="notes">
+                                <group>
+                                    <field name="description" nolabel="1" placeholder="Description de l'équipe..." />
+                                </group>
+                                
+                                <separator string="Configuration avancée" />
+                                <group>
+                                    <group>
+                                        <field name="team_type" />
+                                        <field name="hourly_cost" />
+                                    </group>
+                                    <group>
+                                        <field name="estimated_monthly_cost" />
+                                    </group>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" />
+                        <field name="activity_ids" />
+                        <field name="message_ids" />
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- Vue Liste Équipe Agricole -->
+        <record id="view_bsr_agri_team_tree" model="ir.ui.view">
+            <field name="name">bsr.agri.team.tree</field>
+            <field name="model">bsr.agri.team</field>
+            <field name="arch" type="xml">
+                <tree string="Équipes Agricoles" 
+                      decoration-muted="state=='archived'"
+                      decoration-bf="state=='active'">
+                    <field name="name" />
+                    <field name="code" />
+                    <field name="team_type" />
+                    <field name="leader_id" />
+                    <field name="member_count" />
+                    <field name="current_operations_count" />
+                    <field name="total_operations_count" />
+                    <field name="avg_performance_rating" widget="progressbar" />
+                    <field name="hourly_cost" />
+                    <field name="state" />
+                    <field name="company_id" groups="base.group_multi_company" />
+                </tree>
+            </field>
+        </record>
+
+        <!-- Vue Kanban Équipe Agricole -->
+        <record id="view_bsr_agri_team_kanban" model="ir.ui.view">
+            <field name="name">bsr.agri.team.kanban</field>
+            <field name="model">bsr.agri.team</field>
+            <field name="arch" type="xml">
+                <kanban default_group_by="team_type" class="o_kanban_mobile">
+                    <field name="name" />
+                    <field name="code" />
+                    <field name="team_type" />
+                    <field name="leader_id" />
+                    <field name="member_count" />
+                    <field name="total_operations_count" />
+                    <field name="avg_performance_rating" />
+                    <field name="state" />
+                    <field name="image_128" />
+                    <field name="assignment_count" />
+                    
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_card oe_kanban_global_click">
+                                <div class="o_kanban_image">
+                                    <img t-att-src="kanban_image('bsr.agri.team', 'image_128', record.id.raw_value)" 
+                                         alt="Team" class="o_kanban_image_fill_left"/>
+                                </div>
+                                
+                                <div class="oe_kanban_details">
+                                    <div class="o_kanban_record_top">
+                                        <div class="o_kanban_record_headings">
+                                            <strong class="o_kanban_record_title">
+                                                <field name="name" />
+                                            </strong>
+                                            <br/>
+                                            <span class="text-muted">
+                                                <field name="code" /> - <field name="team_type" />
+                                            </span>
+                                        </div>
+                                        
+                                        <div class="o_kanban_record_top_right">
+                                            <div class="o_kanban_record_activity">
+                                                <span class="badge badge-pill badge-info" t-if="record.state.raw_value == 'active'">
+                                                    Active
+                                                </span>
+                                                <span class="badge badge-pill badge-secondary" t-if="record.state.raw_value == 'draft'">
+                                                    Brouillon
+                                                </span>
+                                                <span class="badge badge-pill badge-dark" t-if="record.state.raw_value == 'archived'">
+                                                    Archivée
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="o_kanban_record_body">
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <span class="fa fa-user" title="Responsable"/>
+                                                <field name="leader_id" />
+                                            </div>
+                                            <div class="col-6">
+                                                <span class="fa fa-users" title="Membres"/>
+                                                <t t-esc="record.member_count.raw_value"/> membres
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="row mt-2">
+                                            <div class="col-12">
+                                                <div class="progress mb-1" style="height: 10px;">
+                                                    <div class="progress-bar bg-success" role="progressbar" 
+                                                         t-attf-style="width: #{record.avg_performance_rating.raw_value}%"
+                                                         t-attf-title="Performance: #{record.avg_performance_rating.raw_value}%">
+                                                    </div>
+                                                </div>
+                                                <small class="text-muted">Performance: <t t-esc="record.avg_performance_rating.raw_value"/>%</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="o_kanban_record_bottom">
+                                        <div class="oe_kanban_bottom_left">
+                                            <span class="fa fa-tasks" title="Affectations"/>
+                                            <t t-esc="record.total_operations_count.raw_value"/> affectations
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- Vue Recherche Équipe Agricole -->
+        <record id="view_bsr_agri_team_search" model="ir.ui.view">
+            <field name="name">bsr.agri.team.search</field>
+            <field name="model">bsr.agri.team</field>
+            <field name="arch" type="xml">
+                <search string="Rechercher Équipes">
+                    <field name="name" string="Nom" filter_domain="[('name','ilike',self)]" />
+                    <field name="code" string="Code" filter_domain="[('code','ilike',self)]" />
+                    <field name="leader_id" string="Responsable" />
+                    <field name="team_type" string="Type d'équipe" />
+                    <field name="member_ids" string="Membres" />
+                    <field name="company_id" invisible="1" />
+                    
+                    <separator />
+                    
+                    <!-- Filtres -->
+                    <filter string="Actives" name="active" domain="[('state','=','active')]" />
+                    <filter string="En brouillon" name="draft" domain="[('state','=','draft')]" />
+                    <filter string="Archivées" name="archived" domain="[('state','=','archived')]" />
+                    
+                    <separator />
+                    
+                    <filter string="Équipes de culture" name="crop" domain="[('team_type','in',['seeding','harvest'])]" />
+                    <filter string="Équipes d'élevage" name="livestock" domain="[('team_type','=','livestock')]" />
+                    <filter string="Équipes mixtes" name="general" domain="[('team_type','=','general')]" />
+                    <filter string="Équipes de maintenance" name="maintenance" domain="[('team_type','=','maintenance')]" />
+                    
+                    <separator />
+                    
+                    <filter string="Équipes actives" name="active_teams" 
+                            domain="[('state', '=', 'active')]" />
+                    <filter string="Avec chef d'équipe" name="with_leader" 
+                            domain="[('leader_id', '!=', False)]" />
+                    <filter string="Avec membres" name="with_members" 
+                            domain="[('member_ids', '!=', False)]" />
+                    
+                    <separator />
+                    
+                    <filter string="Ma société" name="my_company" domain="[('company_id','=',company_id)]" />
+                    
+                    <!-- Groupements -->
+                    <group expand="0" string="Grouper par">
+                        <filter string="Type d'équipe" name="group_team_type" context="{'group_by':'team_type'}" />
+                        <filter string="Responsable" name="group_leader" context="{'group_by':'leader_id'}" />
+                        <filter string="État" name="group_state" context="{'group_by':'state'}" />
+                        <filter string="Société" name="group_company" context="{'group_by':'company_id'}" groups="base.group_multi_company" />
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Action principale -->
+        <record id="action_bsr_agri_team" model="ir.actions.act_window">
+            <field name="name">Équipes Agricoles</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">bsr.agri.team</field>
+            <field name="view_mode">kanban,tree,form</field>
+            <field name="context">{'search_default_active': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Créer votre première équipe agricole
+                </p>
+                <p>
+                    Les équipes permettent d'organiser vos employés selon leurs spécialisations
+                    et de les affecter efficacement aux opérations agricoles.
+                </p>
+            </field>
+        </record>
+
+    </data>
+</odoo>

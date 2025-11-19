@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <!-- Séquence pour les codes de ferme -->
+        <record id="seq_farm_code" model="ir.sequence">
+            <field name="name">Code Ferme</field>
+            <field name="code">bsr.farm.code</field>
+            <field name="prefix">FARM-</field>
+            <field name="padding">4</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="use_date_range">False</field>
+        </record>
+
+    </data>
+</odoo>

@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Vue formulaire Alerte d'analyse -->
+        <record id="view_analysis_alert_form" model="ir.ui.view">
+            <field name="name">bsr.analysis.alert.form</field>
+            <field name="model">bsr.analysis.alert</field>
+            <field name="arch" type="xml">
+                <form string="Alerte d'analyse">
+                    <header>
+                        <button name="action_acknowledge" string="Prendre en compte" type="object"
+                                attrs="{'invisible': [('state', '!=', 'new')]}" class="oe_highlight"/>
+                        <button name="action_start_resolution" string="Commencer résolution" type="object"
+                                attrs="{'invisible': [('state', 'not in', ['new', 'acknowledged'])]}" class="oe_highlight"/>
+                        <button name="action_resolve" string="Résoudre" type="object"
+                                attrs="{'invisible': [('state', '!=', 'in_progress')]}" class="oe_highlight"/>
+                        <button name="action_dismiss" string="Ignorer" type="object"
+                                attrs="{'invisible': [('state', 'in', ['resolved', 'dismissed'])]}"/>
+                        <field name="state" widget="statusbar" statusbar_visible="new,acknowledged,in_progress,resolved"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_view_analysis" type="object"
+                                    class="oe_stat_button" icon="fa-flask">
+                                <div class="o_field_widget o_stat_info">
+                                    <span class="o_stat_text">Voir</span>
+                                    <span class="o_stat_text">Analyse</span>
+                                </div>
+                            </button>
+                        </div>
+                        
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" readonly="1"/>
+                            </h1>
+                        </div>
+                        
+                        <group>
+                            <group>
+                                <field name="alert_type" widget="badge"/>
+                                <field name="priority" widget="badge"/>
+                                <field name="parameter_id"/>
+                                <field name="value"/>
+                                <field name="threshold_exceeded"/>
+                            </group>
+                            <group>
+                                <field name="farm_id"/>
+                                <field name="parcel_id"/>
+                                <field name="culture_id"/>
+                                <field name="soil_analysis_id"/>
+                                <field name="culture_analysis_id"/>
+                            </group>
+                        </group>
+                        
+                        <group string="Message d'alerte">
+                            <field name="message" nolabel="1"/>
+                        </group>
+                        
+                        <notebook>
+                            <page string="Actions et résolution" name="actions">
+                                <group>
+                                    <field name="recommended_action" placeholder="Action recommandée..."/>
+                                    <field name="action_taken" placeholder="Action réalisée..."/>
+                                    <field name="resolution_notes" placeholder="Notes de résolution..."/>
+                                </group>
+                                
+                                <group string="Assignation et suivi">
+                                    <group>
+                                        <field name="assigned_to_id"/>
+                                        <field name="deadline"/>
+                                        <field name="is_overdue" invisible="1"/>
+                                    </group>
+                                    <group>
+                                        <field name="acknowledged_by_id"/>
+                                        <field name="acknowledged_date"/>
+                                        <field name="resolved_by_id"/>
+                                        <field name="resolved_date"/>
+                                    </group>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- Vue liste Alerte d'analyse -->
+        <record id="view_analysis_alert_tree" model="ir.ui.view">
+            <field name="name">bsr.analysis.alert.tree</field>
+            <field name="model">bsr.analysis.alert</field>
+            <field name="arch" type="xml">
+                <tree string="Alertes d'analyse" decoration-danger="alert_type=='critical'" 
+                      decoration-warning="alert_type=='warning'" decoration-muted="state=='resolved'"
+                      decoration-bf="state=='new'">
+                    <field name="name"/>
+                    <field name="alert_type" widget="badge"/>
+                    <field name="priority" widget="badge"/>
+                    <field name="farm_id"/>
+                    <field name="parcel_id"/>
+                    <field name="culture_id"/>
+                    <field name="parameter_id"/>
+                    <field name="value"/>
+                    <field name="state" widget="badge"/>
+                    <field name="assigned_to_id"/>
+                    <field name="deadline"/>
+                    <field name="is_overdue" invisible="1"/>
+                    <field name="create_date"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Vue kanban Alerte d'analyse -->
+        <record id="view_analysis_alert_kanban" model="ir.ui.view">
+            <field name="name">bsr.analysis.alert.kanban</field>
+            <field name="model">bsr.analysis.alert</field>
+            <field name="arch" type="xml">
+                <kanban string="Alertes d'analyse" default_group_by="state" class="o_kanban_small_column">
+                    <field name="id"/>
+                    <field name="name"/>
+                    <field name="alert_type"/>
+                    <field name="priority"/>
+                    <field name="state"/>
+                    <field name="farm_id"/>
+                    <field name="parcel_id"/>
+                    <field name="parameter_id"/>
+                    <field name="value"/>
+                    <field name="assigned_to_id"/>
+                    <field name="deadline"/>
+                    <field name="is_overdue"/>
+                    <field name="create_date"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div t-attf-class="oe_kanban_card oe_kanban_global_click #{record.alert_type.raw_value === 'critical' ? 'oe_kanban_color_2' : record.alert_type.raw_value === 'warning' ? 'oe_kanban_color_3' : 'oe_kanban_color_0'}">
+                                <div class="oe_kanban_content">
+                                    <div class="o_kanban_record_top">
+                                        <div class="o_kanban_record_headings">
+                                            <strong class="o_kanban_record_title">
+                                                <field name="parameter_id"/>
+                                            </strong>
+                                            <div class="o_kanban_record_subtitle">
+                                                <field name="farm_id"/> - <field name="parcel_id"/>
+                                            </div>
+                                        </div>
+                                        <div class="o_dropdown_kanban dropdown">
+                                            <a role="button" class="dropdown-toggle o-no-caret btn" data-toggle="dropdown" href="#" aria-label="Dropdown menu" title="Dropdown menu">
+                                                <span class="fa fa-ellipsis-v"/>
+                                            </a>
+                                            <div class="dropdown-menu" role="menu">
+                                                <a name="action_acknowledge" type="object" role="menuitem" class="dropdown-item" t-if="record.state.raw_value === 'new'">Prendre en compte</a>
+                                                <a name="action_start_resolution" type="object" role="menuitem" class="dropdown-item" t-if="record.state.raw_value in ['new', 'acknowledged']">Commencer résolution</a>
+                                                <a name="action_resolve" type="object" role="menuitem" class="dropdown-item" t-if="record.state.raw_value === 'in_progress'">Résoudre</a>
+                                                <a name="action_dismiss" type="object" role="menuitem" class="dropdown-item" t-if="record.state.raw_value not in ['resolved', 'dismissed']">Ignorer</a>
+                                                <div class="dropdown-divider"/>
+                                                <a name="action_view_analysis" type="object" role="menuitem" class="dropdown-item">Voir analyse</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="o_kanban_record_body">
+                                        <div class="o_kanban_tags_section">
+                                            <span t-attf-class="badge badge-pill #{record.alert_type.raw_value === 'critical' ? 'badge-danger' : record.alert_type.raw_value === 'warning' ? 'badge-warning' : 'badge-info'}">
+                                                <t t-esc="record.alert_type.value"/>
+                                            </span>
+                                            <span t-attf-class="badge badge-pill #{record.priority.raw_value === 'urgent' ? 'badge-danger' : record.priority.raw_value === 'high' ? 'badge-warning' : 'badge-secondary'}">
+                                                <t t-esc="record.priority.value"/>
+                                            </span>
+                                        </div>
+                                        <div class="o_kanban_record_body">
+                                            <div>Valeur: <strong><t t-esc="record.value.value"/></strong></div>
+                                            <div t-if="record.deadline.value" class="text-muted">
+                                                Échéance: <t t-esc="record.deadline.value"/>
+                                            </div>
+                                        </div>
+                                        <div class="o_kanban_record_bottom">
+                                            <div class="oe_kanban_bottom_left">
+                                                <field name="create_date"/>
+                                            </div>
+                                            <div class="oe_kanban_bottom_right">
+                                                <field name="assigned_to_id" widget="many2one_avatar_user"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- Vue recherche Alerte d'analyse -->
+        <record id="view_analysis_alert_search" model="ir.ui.view">
+            <field name="name">bsr.analysis.alert.search</field>
+            <field name="model">bsr.analysis.alert</field>
+            <field name="arch" type="xml">
+                <search string="Rechercher alertes d'analyse">
+                    <field name="name"/>
+                    <field name="farm_id"/>
+                    <field name="parcel_id"/>
+                    <field name="culture_id"/>
+                    <field name="parameter_id"/>
+                    <field name="assigned_to_id"/>
+                    <separator/>
+                    <filter string="Mes alertes" name="my_alerts" domain="[('assigned_to_id', '=', uid)]"/>
+                    <filter string="Non assignées" name="unassigned" domain="[('assigned_to_id', '=', False)]"/>
+                    <separator/>
+                    <filter string="Nouvelles" name="state_new" domain="[('state', '=', 'new')]"/>
+                    <filter string="Prises en compte" name="state_acknowledged" domain="[('state', '=', 'acknowledged')]"/>
+                    <filter string="En cours" name="state_in_progress" domain="[('state', '=', 'in_progress')]"/>
+                    <filter string="Résolues" name="state_resolved" domain="[('state', '=', 'resolved')]"/>
+                    <separator/>
+                    <filter string="Critiques" name="alert_critical" domain="[('alert_type', '=', 'critical')]"/>
+                    <filter string="Avertissements" name="alert_warning" domain="[('alert_type', '=', 'warning')]"/>
+                    <filter string="Information" name="alert_info" domain="[('alert_type', '=', 'info')]"/>
+                    <separator/>
+                    <filter string="Urgent" name="priority_urgent" domain="[('priority', '=', 'urgent')]"/>
+                    <filter string="Élevé" name="priority_high" domain="[('priority', '=', 'high')]"/>
+                    <separator/>
+                    <filter string="En retard" name="overdue" domain="[('is_overdue', '=', True)]"/>
+                    <filter string="Seuil dépassé" name="threshold_exceeded" domain="[('threshold_exceeded', '=', True)]"/>
+                    <separator/>
+                    <filter string="Aujourd'hui" name="today" domain="[('create_date', '>=', datetime.date.today().strftime('%Y-%m-%d'))]"/>
+                    <filter string="Cette semaine" name="this_week" domain="[('create_date', '>=', datetime.date.today().strftime('%Y-%m-%d'))]"/>
+                    <separator/>
+                    <group expand="0" string="Grouper par">
+                        <filter string="Ferme" name="group_farm" context="{'group_by': 'farm_id'}"/>
+                        <filter string="Parcelle" name="group_parcel" context="{'group_by': 'parcel_id'}"/>
+                        <filter string="Type d'alerte" name="group_alert_type" context="{'group_by': 'alert_type'}"/>
+                        <filter string="Priorité" name="group_priority" context="{'group_by': 'priority'}"/>
+                        <filter string="Statut" name="group_state" context="{'group_by': 'state'}"/>
+                        <filter string="Paramètre" name="group_parameter" context="{'group_by': 'parameter_id'}"/>
+                        <filter string="Assigné à" name="group_assigned" context="{'group_by': 'assigned_to_id'}"/>
+                        <filter string="Date de création" name="group_create_date" context="{'group_by': 'create_date:day'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Action Alerte d'analyse -->
+        <record id="action_analysis_alert" model="ir.actions.act_window">
+            <field name="name">Alertes d'analyse</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">bsr.analysis.alert</field>
+            <field name="view_mode">kanban,tree,form</field>
+            <field name="context">{'search_default_state_new': 1, 'search_default_state_acknowledged': 1, 'search_default_state_in_progress': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Aucune alerte d'analyse active
+                </p>
+                <p>
+                    Les alertes sont générées automatiquement quand les résultats d'analyse
+                    dépassent les seuils configurés.
+                </p>
+            </field>
+        </record>
+
+    </data>
+</odoo>

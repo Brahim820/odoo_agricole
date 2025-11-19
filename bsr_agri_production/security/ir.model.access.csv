@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_bsr_production_campaign_manager,bsr.production.campaign manager,model_bsr_production_campaign,group_production_manager,1,1,1,1
+access_bsr_production_campaign_supervisor,bsr.production.campaign supervisor,model_bsr_production_campaign,group_farm_supervisor,1,1,1,1
+access_bsr_production_campaign_operator,bsr.production.campaign operator,model_bsr_production_campaign,group_field_operator,1,0,0,0
+access_bsr_production_campaign_analyst,bsr.production.campaign analyst,model_bsr_production_campaign,group_analyst,1,0,0,0
+access_bsr_production_cycle_manager,bsr.production.cycle manager,model_bsr_production_cycle,group_production_manager,1,1,1,1
+access_bsr_production_cycle_supervisor,bsr.production.cycle supervisor,model_bsr_production_cycle,group_farm_supervisor,1,1,1,1
+access_bsr_production_cycle_operator,bsr.production.cycle operator,model_bsr_production_cycle,group_field_operator,1,1,0,0
+access_bsr_production_cycle_analyst,bsr.production.cycle analyst,model_bsr_production_cycle,group_analyst,1,0,0,0

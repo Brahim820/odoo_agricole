@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <!-- Configuration par défaut des états -->
+        <!-- Ces données peuvent être étendues selon les besoins spécifiques -->
+        
+        <!-- Paramètres système pour les phases par défaut -->
+        <record id="config_default_cycle_phases" model="ir.config_parameter">
+            <field name="key">bsr_agri_production.default_cycle_phases</field>
+            <field name="value">preparation,sowing,emergence,growth,flowering,fruiting,maturation,harvest_ready,harvest,post_harvest</field>
+        </record>
+        
+        <!-- Durées moyennes par phase (en jours) -->
+        <record id="config_phase_durations" model="ir.config_parameter">
+            <field name="key">bsr_agri_production.phase_durations</field>
+            <field name="value">{"preparation": 7, "sowing": 3, "emergence": 14, "growth": 60, "flowering": 15, "fruiting": 30, "maturation": 21, "harvest_ready": 7, "harvest": 5, "post_harvest": 10}</field>
+        </record>
+
+    </data>
+</odoo>

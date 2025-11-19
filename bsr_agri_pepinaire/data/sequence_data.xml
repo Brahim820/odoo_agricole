@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Séquence pour les lots de plants -->
+        <record id="seq_pepiniere_lot_plant" model="ir.sequence">
+            <field name="name">Lot de plants</field>
+            <field name="code">pepiniere.lot.plant</field>
+            <field name="prefix">LOT/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <!-- Séquence pour les interventions -->
+        <record id="seq_pepiniere_intervention" model="ir.sequence">
+            <field name="name">Intervention</field>
+            <field name="code">pepiniere.intervention</field>
+            <field name="prefix">INT/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <!-- Séquence pour les mouvements d'intrants -->
+        <record id="seq_pepiniere_mouvement_intrant" model="ir.sequence">
+            <field name="name">Mouvement intrant</field>
+            <field name="code">pepiniere.mouvement.intrant</field>
+            <field name="prefix">MVT/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+    </data>
+</odoo>

@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Vue Tree des Cultures -->
+    <record id="view_culture_tree" model="ir.ui.view">
+        <field name="name">bsr.culture.tree</field>
+        <field name="model">bsr.culture</field>
+        <field name="arch" type="xml">
+            <tree decoration-success="state=='finished'" decoration-info="state in ['planted','growing']" decoration-warning="state=='ready'" decoration-danger="state=='cancelled'">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="culture_type_id"/>
+                <field name="variety"/>
+                <field name="farm_id"/>
+                <field name="parcel_id"/>
+                <field name="start_date"/>
+                <field name="expected_end_date"/>
+                <field name="state" widget="badge" decoration-success="state=='finished'" decoration-info="state in ['planted','growing']" decoration-warning="state=='ready'" decoration-danger="state=='cancelled'"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Vue Form des Cultures -->
+    <record id="view_culture_form" model="ir.ui.view">
+        <field name="name">bsr.culture.form</field>
+        <field name="model">bsr.culture</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_start_planting" string="Démarrer plantation" type="object" class="btn-primary" attrs="{'invisible': [('state', '!=', 'planned')]}"/>
+                    <button name="action_mark_growing" string="Marquer en croissance" type="object" attrs="{'invisible': [('state', '!=', 'planted')]}"/>
+                    <button name="action_mark_ready" string="Prête à récolter" type="object" attrs="{'invisible': [('state', '!=', 'growing')]}"/>
+                    <button name="action_harvest" string="Récolter" type="object" class="btn-warning" attrs="{'invisible': [('state', '!=', 'ready')]}"/>
+                    <button name="action_finish" string="Terminer" type="object" class="btn-success" attrs="{'invisible': [('state', '!=', 'harvested')]}"/>
+                    <button name="action_cancel" string="Annuler" type="object" class="btn-danger" attrs="{'invisible': [('state', 'in', ['finished', 'cancelled'])]}"/>
+                    <field name="state" widget="statusbar" statusbar_visible="planned,planted,growing,ready,harvested,finished"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <!-- Smart button pour les campagnes (cultures cycliques) -->
+                        <button name="action_view_campaigns" type="object"
+                                class="oe_stat_button" icon="fa-calendar"
+                                attrs="{'invisible': [('is_cyclical', '=', False)]}">
+                            <field name="campaign_count" widget="statinfo" string="Campagnes"/>
+                        </button>
+                        
+                        <!-- Bouton pour créer une nouvelle campagne -->
+                        <button name="action_create_next_campaign" type="object"
+                                class="oe_stat_button" icon="fa-plus"
+                                string="Nouvelle campagne"
+                                attrs="{'invisible': [('is_cyclical', '=', False)]}"/>
+                    </div>
+                    <widget name="web_ribbon" title="Archivé" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Nom de la culture"/>
+                        </h1>
+                        <h2>
+                            <field name="code" placeholder="Code de la culture"/>
+                        </h2>
+                    </div>
+                    
+                    <group>
+                        <group name="left">
+                            <field name="culture_type_id" options="{'no_create': True}"/>
+                            <field name="variety"/>
+                            <field name="parcel_id" options="{'no_create': True}"/>
+                            <field name="farm_id"/>
+                            <field name="is_cyclical" invisible="1"/>
+                            <field name="current_campaign_id" attrs="{'invisible': [('is_cyclical', '=', False)]}" readonly="1"/>
+                            <field name="active"/>
+                        </group>
+                        <group name="right">
+                            <field name="start_date"/>
+                            <field name="expected_end_date"/>
+                            <field name="actual_end_date" attrs="{'readonly': [('state', 'not in', ['harvested', 'finished'])]}"/>
+                            <field name="duration_days"/>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <page string="Production">
+                            <group>
+                                <group name="planted">
+                                    <separator string="Quantité plantée" colspan="2"/>
+                                    <field name="planted_quantity"/>
+                                    <field name="planted_unit"/>
+                                </group>
+                                <group name="yield">
+                                    <separator string="Rendement" colspan="2"/>
+                                    <field name="expected_yield"/>
+                                    <field name="actual_yield"/>
+                                    <field name="yield_unit"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Finances">
+                            <group>
+                                <field name="currency_id" invisible="1"/>
+                                <group name="costs">
+                                    <separator string="Coûts" colspan="2"/>
+                                    <field name="production_cost" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                </group>
+                                <group name="revenue">
+                                    <separator string="Revenus" colspan="2"/>
+                                    <field name="expected_revenue" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                    <field name="actual_revenue" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                    <field name="profitability" widget="percentage"/>
+                                </group>
+                            </group>
+                        </page>
+                        
+                        <!-- Page des campagnes (pour cultures cycliques) -->
+                        <page string="Campagnes" name="campaigns" attrs="{'invisible': [('is_cyclical', '=', False)]}">
+                            <field name="campaign_ids" mode="tree,form">
+                                <tree string="Campagnes" decoration-success="state == 'completed'" 
+                                      decoration-info="state == 'active'" decoration-muted="state in ('suspended', 'cancelled')">
+                                    <field name="name"/>
+                                    <field name="year"/>
+                                    <field name="season"/>
+                                    <field name="cycle_number"/>
+                                    <field name="start_date"/>
+                                    <field name="state" widget="badge"/>
+                                    <field name="expected_yield"/>
+                                    <field name="actual_yield"/>
+                                </tree>
+                            </field>
+                        </page>
+                        
+                        <page string="Notes">
+                            <field name="notes" placeholder="Notes et observations sur la culture..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Vue Kanban des Cultures -->
+    <record id="view_culture_kanban" model="ir.ui.view">
+        <field name="name">bsr.culture.kanban</field>
+        <field name="model">bsr.culture</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="culture_type_id"/>
+                <field name="variety"/>
+                <field name="farm_id"/>
+                <field name="parcel_id"/>
+                <field name="state"/>
+                <field name="start_date"/>
+                <field name="expected_end_date"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_card oe_kanban_global_click">
+                            <div class="oe_kanban_content">
+                                <div class="o_kanban_record_top">
+                                    <div class="o_kanban_record_headings">
+                                        <strong class="o_kanban_record_title">
+                                            <field name="name"/>
+                                        </strong>
+                                        <br/>
+                                        <span class="text-muted"><field name="code"/></span>
+                                    </div>
+                                </div>
+                                <div class="o_kanban_record_body">
+                                    <div>
+                                        <strong>Type:</strong> <field name="culture_type_id"/>
+                                    </div>
+                                    <div t-if="record.variety.raw_value">
+                                        <strong>Variété:</strong> <field name="variety"/>
+                                    </div>
+                                    <div>
+                                        <strong>Ferme:</strong> <field name="farm_id"/>
+                                    </div>
+                                    <div>
+                                        <strong>Parcelle:</strong> <field name="parcel_id"/>
+                                    </div>
+                                    <div>
+                                        <strong>Début:</strong> <field name="start_date"/>
+                                    </div>
+                                    <div t-if="record.expected_end_date.raw_value">
+                                        <strong>Fin prévue:</strong> <field name="expected_end_date"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Vue Calendar des Cultures -->
+    <record id="view_culture_calendar" model="ir.ui.view">
+        <field name="name">bsr.culture.calendar</field>
+        <field name="model">bsr.culture</field>
+        <field name="arch" type="xml">
+            <calendar date_start="start_date" date_stop="expected_end_date" string="Cultures" mode="month" color="state">
+                <field name="name"/>
+                <field name="culture_type_id"/>
+                <field name="parcel_id"/>
+                <field name="state"/>
+            </calendar>
+        </field>
+    </record>
+
+    <!-- Vue Graphique des Cultures -->
+    <record id="view_culture_graph" model="ir.ui.view">
+        <field name="name">bsr.culture.graph</field>
+        <field name="model">bsr.culture</field>
+        <field name="arch" type="xml">
+            <graph string="Analyse des Cultures" type="bar">
+                <field name="culture_type_id" type="row"/>
+                <field name="state" type="col"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Action pour les Cultures -->
+    <record id="action_culture" model="ir.actions.act_window">
+        <field name="name">Cultures</field>
+        <field name="res_model">bsr.culture</field>
+        <field name="view_mode">kanban,tree,form,calendar,graph</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Créer votre première culture !
+            </p>
+            <p>
+                Planifiez et suivez vos cultures sur vos différentes parcelles.
+                Vous pouvez suivre l'évolution de chaque culture depuis la plantation jusqu'à la récolte.
+            </p>
+        </field>
+    </record>
+
+</odoo>

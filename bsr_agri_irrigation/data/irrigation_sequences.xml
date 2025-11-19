@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Séquences pour les codes automatiques -->
+
+        <!-- Séquence pour les systèmes d'irrigation -->
+        <record id="sequence_irrigation_system" model="ir.sequence">
+            <field name="name">Système d'irrigation</field>
+            <field name="code">bsr.irrigation.system</field>
+            <field name="prefix">SYS-</field>
+            <field name="padding">4</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <!-- Séquence pour les zones d'irrigation -->
+        <record id="sequence_irrigation_zone" model="ir.sequence">
+            <field name="name">Zone d'irrigation</field>
+            <field name="code">bsr.irrigation.zone</field>
+            <field name="prefix">ZONE-</field>
+            <field name="padding">4</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <!-- Séquence pour les programmes d'irrigation -->
+        <record id="sequence_irrigation_program" model="ir.sequence">
+            <field name="name">Programme d'irrigation</field>
+            <field name="code">bsr.irrigation.program</field>
+            <field name="prefix">PROG-</field>
+            <field name="padding">4</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <!-- Séquence pour les sessions d'irrigation -->
+        <record id="sequence_irrigation_session" model="ir.sequence">
+            <field name="name">Session d'irrigation</field>
+            <field name="code">bsr.irrigation.session</field>
+            <field name="prefix">SESS-</field>
+            <field name="padding">5</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <!-- Séquence pour les alertes d'irrigation -->
+        <record id="sequence_irrigation_alert" model="ir.sequence">
+            <field name="name">Alerte irrigation</field>
+            <field name="code">bsr.irrigation.alert</field>
+            <field name="prefix">ALERT-</field>
+            <field name="padding">5</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <!-- Séquences spécialisées par année -->
+
+        <!-- Séquence sessions par année -->
+        <record id="sequence_irrigation_session_yearly" model="ir.sequence">
+            <field name="name">Session irrigation (annuelle)</field>
+            <field name="code">bsr.irrigation.session.yearly</field>
+            <field name="prefix">%(year)s-SESS-</field>
+            <field name="padding">4</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="use_date_range">True</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <!-- Séquence alertes par année -->
+        <record id="sequence_irrigation_alert_yearly" model="ir.sequence">
+            <field name="name">Alerte irrigation (annuelle)</field>
+            <field name="code">bsr.irrigation.alert.yearly</field>
+            <field name="prefix">%(year)s-AL-</field>
+            <field name="padding">4</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="use_date_range">True</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+    </data>
+</odoo>

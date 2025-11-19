@@ -1,0 +1,16 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pepiniere_espece_user,pepiniere.espece.user,model_pepiniere_espece,group_pepiniere_user,1,0,0,0
+access_pepiniere_espece_manager,pepiniere.espece.manager,model_pepiniere_espece,group_pepiniere_manager,1,1,1,1
+access_pepiniere_variete_user,pepiniere.variete.user,model_pepiniere_variete,group_pepiniere_user,1,0,0,0
+access_pepiniere_variete_manager,pepiniere.variete.manager,model_pepiniere_variete,group_pepiniere_manager,1,1,1,1
+access_pepiniere_lot_plant_user,pepiniere.lot.plant.user,model_pepiniere_lot_plant,group_pepiniere_user,1,1,1,0
+access_pepiniere_lot_plant_manager,pepiniere.lot.plant.manager,model_pepiniere_lot_plant,group_pepiniere_manager,1,1,1,1
+access_pepiniere_serre_user,pepiniere.serre.user,model_pepiniere_serre,group_pepiniere_user,1,0,0,0
+access_pepiniere_serre_manager,pepiniere.serre.manager,model_pepiniere_serre,group_pepiniere_manager,1,1,1,1
+access_pepiniere_intervention_user,pepiniere.intervention.user,model_pepiniere_intervention,group_pepiniere_user,1,1,1,0
+access_pepiniere_intervention_manager,pepiniere.intervention.manager,model_pepiniere_intervention,group_pepiniere_manager,1,1,1,1
+access_pepiniere_intrant_user,pepiniere.intrant.user,model_pepiniere_intrant,group_pepiniere_user,1,0,0,0
+access_pepiniere_intrant_manager,pepiniere.intrant.manager,model_pepiniere_intrant,group_pepiniere_manager,1,1,1,1
+access_pepiniere_mouvement_intrant_user,pepiniere.mouvement.intrant.user,model_pepiniere_mouvement_intrant,group_pepiniere_user,1,1,1,0
+access_pepiniere_mouvement_intrant_manager,pepiniere.mouvement.intrant.manager,model_pepiniere_mouvement_intrant,group_pepiniere_manager,1,1,1,1
+

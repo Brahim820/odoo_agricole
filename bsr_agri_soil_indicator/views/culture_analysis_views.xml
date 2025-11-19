@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Vue formulaire Analyse de culture -->
+        <record id="view_culture_analysis_form" model="ir.ui.view">
+            <field name="name">bsr.culture.analysis.form</field>
+            <field name="model">bsr.culture.analysis</field>
+            <field name="arch" type="xml">
+                <form string="Analyse de culture">
+                    <header>
+                        <button name="action_sample" string="Échantillonner" type="object"
+                                attrs="{'invisible': [('state', '!=', 'draft')]}" class="oe_highlight"/>
+                        <button name="action_analyze" string="Analyser" type="object"
+                                attrs="{'invisible': [('state', '!=', 'sampled')]}" class="oe_highlight"/>
+                        <button name="action_validate" string="Valider" type="object"
+                                attrs="{'invisible': [('state', '!=', 'analyzed')]}" class="oe_highlight"/>
+                        <button name="action_archive" string="Archiver" type="object"
+                                attrs="{'invisible': [('state', '!=', 'validated')]}"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,sampled,analyzed,validated"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_view_results" type="object"
+                                    class="oe_stat_button" icon="fa-flask" attrs="{'invisible': [('result_count', '=', 0)]}">
+                                <field name="result_count" widget="statinfo" string="Résultats"/>
+                            </button>
+                            <button name="action_view_alerts" type="object"
+                                    class="oe_stat_button" icon="fa-warning" attrs="{'invisible': [('alert_count', '=', 0)]}">
+                                <field name="alert_count" widget="statinfo" string="Alertes"/>
+                            </button>
+                        </div>
+                        
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" readonly="1"/>
+                            </h1>
+                            <h2>
+                                <field name="display_name" readonly="1"/>
+                            </h2>
+                        </div>
+                        
+                        <group>
+                            <group>
+                                <field name="farm_id"/>
+                                <field name="parcel_id"/>
+                                <field name="culture_id"/>
+                                <field name="analysis_type_id" domain="[('category', 'in', ['culture', 'harvest', 'nutritional'])]"/>
+                                <field name="overall_status" widget="badge"/>
+                            </group>
+                            <group>
+                                <field name="sampling_date"/>
+                                <field name="analysis_date"/>
+                                <field name="laboratory_id"/>
+                                <field name="laboratory_reference"/>
+                                <field name="technician_id"/>
+                                <field name="responsible_id"/>
+                            </group>
+                        </group>
+                        
+                        <notebook>
+                            <page string="Culture et échantillonnage" name="sampling">
+                                <group string="Détails de la culture">
+                                    <group>
+                                        <field name="growth_stage"/>
+                                        <field name="plant_height"/>
+                                        <field name="plant_density"/>
+                                    </group>
+                                </group>
+                                
+                                <group string="Échantillonnage">
+                                    <group>
+                                        <field name="sampling_method"/>
+                                        <field name="sample_type"/>
+                                        <field name="sample_size"/>
+                                        <field name="sample_weight"/>
+                                    </group>
+                                    <group>
+                                        <field name="sampling_latitude"/>
+                                        <field name="sampling_longitude"/>
+                                    </group>
+                                </group>
+                                
+                                <group string="Conditions environnementales">
+                                    <group>
+                                        <field name="temperature"/>
+                                        <field name="humidity"/>
+                                        <field name="weather_conditions"/>
+                                    </group>
+                                </group>
+                            </page>
+                            
+                            <page string="Évaluation visuelle" name="visual_assessment">
+                                <group>
+                                    <group>
+                                        <field name="visual_health_score" widget="radio"/>
+                                    </group>
+                                </group>
+                                
+                                <group string="Observations">
+                                    <field name="diseases_observed" placeholder="Maladies observées..."/>
+                                    <field name="pests_observed" placeholder="Ravageurs observés..."/>
+                                    <field name="stress_symptoms" placeholder="Symptômes de stress..."/>
+                                </group>
+                            </page>
+                            
+                            <page string="Résultats analytiques" name="results">
+                                <field name="result_ids">
+                                    <tree editable="bottom" decoration-success="status=='optimal'" 
+                                          decoration-warning="status=='warning'" decoration-danger="status=='critical'">
+                                        <field name="parameter_id" readonly="1"/>
+                                        <field name="parameter_data_type" invisible="1"/>
+                                        <field name="value_float" attrs="{'invisible': [('parameter_data_type', 'not in', ['float', 'percentage'])], 'required': [('parameter_data_type', 'in', ['float', 'percentage'])]}"/>
+                                        <field name="value_integer" attrs="{'invisible': [('parameter_data_type', '!=', 'integer')], 'required': [('parameter_data_type', '=', 'integer')]}"/>
+                                        <field name="value_boolean" attrs="{'invisible': [('parameter_data_type', '!=', 'boolean')], 'required': [('parameter_data_type', '=', 'boolean')]}"/>
+                                        <field name="value_text" attrs="{'invisible': [('parameter_data_type', '!=', 'text')], 'required': [('parameter_data_type', '=', 'text')]}"/>
+                                        <field name="value_selection" attrs="{'invisible': [('parameter_data_type', '!=', 'selection')], 'required': [('parameter_data_type', '=', 'selection')]}"/>
+                                        <field name="display_value"/>
+                                        <field name="status" widget="badge"/>
+                                        <field name="notes"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            
+                            <page string="Analyses de sol liées" name="related_soil">
+                                <field name="related_soil_analysis_ids">
+                                    <tree>
+                                        <field name="name"/>
+                                        <field name="analysis_date"/>
+                                        <field name="analysis_type_id"/>
+                                        <field name="overall_status" widget="badge"/>
+                                        <field name="state" widget="badge"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            
+                            <page string="Coûts" name="costs">
+                                <group>
+                                    <group>
+                                        <label for="analysis_cost"/>
+                                        <div class="o_row">
+                                            <field name="analysis_cost"/>
+                                            <field name="currency_id" options="{'no_open': True}"/>
+                                        </div>
+                                    </group>
+                                </group>
+                            </page>
+                            
+                            <page string="Recommandations et actions" name="recommendations">
+                                <group>
+                                    <field name="recommendations" placeholder="Recommandations basées sur l'analyse..."/>
+                                    <field name="actions_taken" placeholder="Actions réalisées suite à l'analyse..."/>
+                                </group>
+                                <group>
+                                    <field name="next_analysis_date"/>
+                                </group>
+                            </page>
+                            
+                            <page string="Documents et photos" name="documents">
+                                <group>
+                                    <field name="report_file" filename="report_filename"/>
+                                    <field name="report_filename" invisible="1"/>
+                                    <field name="photos" placeholder="URLs des photos..."/>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- Vue liste Analyse de culture -->
+        <record id="view_culture_analysis_tree" model="ir.ui.view">
+            <field name="name">bsr.culture.analysis.tree</field>
+            <field name="model">bsr.culture.analysis</field>
+            <field name="arch" type="xml">
+                <tree string="Analyses de culture" decoration-info="state=='draft'" 
+                      decoration-warning="state=='sampled'" decoration-success="state=='validated'">
+                    <field name="name"/>
+                    <field name="farm_id"/>
+                    <field name="culture_id"/>
+                    <field name="growth_stage"/>
+                    <field name="analysis_type_id"/>
+                    <field name="sampling_date"/>
+                    <field name="analysis_date"/>
+                    <field name="visual_health_score"/>
+                    <field name="overall_status" widget="badge"/>
+                    <field name="state" widget="badge"/>
+                    <field name="technician_id"/>
+                    <field name="alert_count"/>
+                    <field name="analysis_cost"/>
+                    <field name="currency_id" groups="base.group_multi_company"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Vue kanban Analyse de culture -->
+        <record id="view_culture_analysis_kanban" model="ir.ui.view">
+            <field name="name">bsr.culture.analysis.kanban</field>
+            <field name="model">bsr.culture.analysis</field>
+            <field name="arch" type="xml">
+                <kanban string="Analyses de culture" default_group_by="growth_stage">
+                    <field name="id"/>
+                    <field name="name"/>
+                    <field name="display_name"/>
+                    <field name="culture_id"/>
+                    <field name="growth_stage"/>
+                    <field name="analysis_type_id"/>
+                    <field name="sampling_date"/>
+                    <field name="analysis_date"/>
+                    <field name="overall_status"/>
+                    <field name="state"/>
+                    <field name="visual_health_score"/>
+                    <field name="alert_count"/>
+                    <field name="result_count"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_card oe_kanban_global_click">
+                                <div class="oe_kanban_content">
+                                    <div class="o_kanban_record_top">
+                                        <div class="o_kanban_record_headings">
+                                            <strong class="o_kanban_record_title">
+                                                <field name="name"/>
+                                            </strong>
+                                            <div class="o_kanban_record_subtitle">
+                                                <field name="culture_id"/> - <field name="analysis_type_id"/>
+                                            </div>
+                                        </div>
+                                        <span class="o_kanban_record_title">
+                                            <field name="state" widget="label_selection" options="{'classes': {'draft': 'default', 'sampled': 'warning', 'analyzed': 'success', 'validated': 'success', 'archived': 'default'}}"/>
+                                        </span>
+                                    </div>
+                                    <div class="o_kanban_record_body">
+                                        <div class="o_kanban_tags_section">
+                                            <span class="badge badge-pill">
+                                                <i class="fa fa-flask"/> <t t-esc="record.result_count.value"/> résultats
+                                            </span>
+                                            <span class="badge badge-pill badge-info" t-if="record.visual_health_score.value">
+                                                <i class="fa fa-eye"/> Score: <t t-esc="record.visual_health_score.value"/>
+                                            </span>
+                                            <span class="badge badge-pill badge-warning" t-if="record.alert_count.value">
+                                                <i class="fa fa-warning"/> <t t-esc="record.alert_count.value"/> alertes
+                                            </span>
+                                        </div>
+                                        <div class="o_kanban_record_bottom">
+                                            <div class="oe_kanban_bottom_left">
+                                                <field name="analysis_date"/>
+                                            </div>
+                                            <div class="oe_kanban_bottom_right">
+                                                <field name="technician_id" widget="many2one_avatar_user"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- Vue recherche Analyse de culture -->
+        <record id="view_culture_analysis_search" model="ir.ui.view">
+            <field name="name">bsr.culture.analysis.search</field>
+            <field name="model">bsr.culture.analysis</field>
+            <field name="arch" type="xml">
+                <search string="Rechercher analyses de culture">
+                    <field name="name"/>
+                    <field name="farm_id"/>
+                    <field name="parcel_id"/>
+                    <field name="culture_id"/>
+                    <field name="analysis_type_id"/>
+                    <field name="technician_id"/>
+                    <separator/>
+                    <filter string="Mes analyses" name="my_analyses" domain="[('technician_id', '=', uid)]"/>
+                    <separator/>
+                    <filter string="Brouillon" name="state_draft" domain="[('state', '=', 'draft')]"/>
+                    <filter string="Échantillonné" name="state_sampled" domain="[('state', '=', 'sampled')]"/>
+                    <filter string="Analysé" name="state_analyzed" domain="[('state', '=', 'analyzed')]"/>
+                    <filter string="Validé" name="state_validated" domain="[('state', '=', 'validated')]"/>
+                    <separator/>
+                    <filter string="Excellent" name="status_excellent" domain="[('overall_status', '=', 'excellent')]"/>
+                    <filter string="Bon" name="status_good" domain="[('overall_status', '=', 'good')]"/>
+                    <filter string="Moyen" name="status_average" domain="[('overall_status', '=', 'average')]"/>
+                    <filter string="Médiocre" name="status_poor" domain="[('overall_status', '=', 'poor')]"/>
+                    <filter string="Critique" name="status_critical" domain="[('overall_status', '=', 'critical')]"/>
+                    <separator/>
+                    <filter string="Avec alertes" name="with_alerts" domain="[('alert_count', '>', 0)]"/>
+                    <separator/>
+                    <filter string="Germination" name="stage_germination" domain="[('growth_stage', '=', 'germination')]"/>
+                    <filter string="Émergence" name="stage_emergence" domain="[('growth_stage', '=', 'emergence')]"/>
+                    <filter string="Croissance végétative" name="stage_vegetative" domain="[('growth_stage', '=', 'vegetative')]"/>
+                    <filter string="Floraison" name="stage_flowering" domain="[('growth_stage', '=', 'flowering')]"/>
+                    <filter string="Formation des fruits" name="stage_fruit" domain="[('growth_stage', '=', 'fruit_development')]"/>
+                    <filter string="Maturité" name="stage_maturity" domain="[('growth_stage', '=', 'maturity')]"/>
+                    <separator/>
+                    <filter string="Ce mois" name="this_month" domain="[('analysis_date', '>=', (datetime.date.today().replace(day=1)).strftime('%Y-%m-%d'))]"/>
+                    <filter string="Cette année" name="this_year" domain="[('analysis_date', '>=', datetime.date.today().strftime('%Y-01-01'))]"/>
+                    <separator/>
+                    <group expand="0" string="Grouper par">
+                        <filter string="Ferme" name="group_farm" context="{'group_by': 'farm_id'}"/>
+                        <filter string="Culture" name="group_culture" context="{'group_by': 'culture_id'}"/>
+                        <filter string="Stade de croissance" name="group_growth_stage" context="{'group_by': 'growth_stage'}"/>
+                        <filter string="Type d'analyse" name="group_analysis_type" context="{'group_by': 'analysis_type_id'}"/>
+                        <filter string="Statut" name="group_state" context="{'group_by': 'state'}"/>
+                        <filter string="Statut global" name="group_overall_status" context="{'group_by': 'overall_status'}"/>
+                        <filter string="Technicien" name="group_technician" context="{'group_by': 'technician_id'}"/>
+                        <filter string="Date d'analyse" name="group_analysis_date" context="{'group_by': 'analysis_date:month'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Action Analyse de culture -->
+        <record id="action_culture_analysis" model="ir.actions.act_window">
+            <field name="name">Analyses de culture</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">bsr.culture.analysis</field>
+            <field name="view_mode">kanban,tree,form</field>
+            <field name="context">{'search_default_this_year': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Créer une nouvelle analyse de culture
+                </p>
+                <p>
+                    Les analyses de culture permettent de suivre la santé et le développement
+                    de vos cultures pour optimiser les rendements.
+                </p>
+            </field>
+        </record>
+
+    </data>
+</odoo>

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Vue formulaire Espèce -->
+    <record id="view_pepiniere_espece_form" model="ir.ui.view">
+        <field name="name">pepiniere.espece.form</field>
+        <field name="model">pepiniere.espece</field>
+        <field name="arch" type="xml">
+            <form string="Espèce">
+                <sheet>
+                    <field name="image" widget="image" class="oe_avatar"/>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Nom de l'espèce"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="code"/>
+                            <field name="nom_scientifique"/>
+                            <field name="famille"/>
+                        </group>
+                        <group>
+                            <field name="duree_germination"/>
+                            <field name="duree_pepiniere"/>
+                            <field name="temperature_optimale"/>
+                            <field name="besoin_eau"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Description">
+                            <field name="description"/>
+                        </page>
+                        <page string="Variétés">
+                            <field name="variete_ids">
+                                <tree>
+                                    <field name="code"/>
+                                    <field name="name"/>
+                                    <field name="prix_vente_unitaire"/>
+                                    <field name="active"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Vue liste Espèce -->
+    <record id="view_pepiniere_espece_tree" model="ir.ui.view">
+        <field name="name">pepiniere.espece.tree</field>
+        <field name="model">pepiniere.espece</field>
+        <field name="arch" type="xml">
+            <tree string="Espèces">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="nom_scientifique"/>
+                <field name="famille"/>
+                <field name="variete_count"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Vue recherche Espèce -->
+    <record id="view_pepiniere_espece_search" model="ir.ui.view">
+        <field name="name">pepiniere.espece.search</field>
+        <field name="model">pepiniere.espece</field>
+        <field name="arch" type="xml">
+            <search string="Rechercher espèce">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="nom_scientifique"/>
+                <field name="famille"/>
+                <filter string="Actif" name="active" domain="[('active', '=', True)]"/>
+                <filter string="Inactif" name="inactive" domain="[('active', '=', False)]"/>
+                <group expand="0" string="Grouper par">
+                    <filter string="Famille" name="group_famille" context="{'group_by': 'famille'}"/>
+                    <filter string="Besoin en eau" name="group_besoin_eau" context="{'group_by': 'besoin_eau'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action Espèce -->
+    <record id="action_pepiniere_espece" model="ir.actions.act_window">
+        <field name="name">Espèces</field>
+        <field name="res_model">pepiniere.espece</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'search_default_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Créer une nouvelle espèce
+            </p>
+            <p>
+                Définissez les espèces de plants que vous produisez dans votre pépinière.
+            </p>
+        </field>
+    </record>
+
+</odoo>

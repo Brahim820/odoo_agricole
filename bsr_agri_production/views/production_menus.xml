@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Menu principal Agriculture -->
+    <menuitem id="menu_bsr_agriculture_production" name="Production Agricole" 
+              parent="bsr_agri_base.menu_agriculture_root" sequence="20"/>
+
+    <!-- Sous-menus -->
+    <menuitem id="menu_production_campaign" name="Campagnes" 
+              parent="menu_bsr_agriculture_production" 
+              action="action_production_campaign" sequence="10"/>
+              
+    <menuitem id="menu_production_cycle" name="Cycles de Production" 
+              parent="menu_bsr_agriculture_production" 
+              action="action_production_cycle" sequence="20"/>
+
+    <!-- Sous-menu Configuration (pour les données de base) -->
+    <menuitem id="menu_production_config" name="Configuration" 
+              parent="menu_bsr_agriculture_production" sequence="90"/>
+
+</odoo>

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Rapport Session d'Irrigation -->
+        <template id="report_irrigation_session">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="doc">
+                    <t t-call="web.basic_layout">
+                        <div class="page">
+                            <div class="oe_structure"/>
+                            
+                            <!-- En-tête simple -->
+                            <div class="row mb32">
+                                <div class="col-12">
+                                    <h2 class="text-center">
+                                        <strong>RAPPORT DE SESSION D'IRRIGATION</strong>
+                                    </h2>
+                                    <h5 class="text-center text-muted">
+                                        Session <span t-field="doc.code"/>
+                                    </h5>
+                                </div>
+                            </div>
+
+                            <!-- Informations générales -->
+                            <div class="row mb16">
+                                <div class="col-6">
+                                    <table class="table table-borderless">
+                                        <tr>
+                                            <td width="40%"><strong>Ferme :</strong></td>
+                                            <td><span t-field="doc.farm_id.name"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Zone :</strong></td>
+                                            <td><span t-field="doc.zone_id.name"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Système :</strong></td>
+                                            <td><span t-field="doc.system_id.name"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Programme :</strong></td>
+                                            <td><span t-field="doc.program_id.name"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Statut :</strong></td>
+                                            <td>
+                                                <span t-field="doc.state" class="badge"
+                                                      t-attf-class="badge-{{'success' if doc.state == 'completed' else 'warning' if doc.state == 'in_progress' else 'secondary'}}"/>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="col-6">
+                                    <table class="table table-borderless">
+                                        <tr>
+                                            <td width="40%"><strong>Culture :</strong></td>
+                                            <td><span t-field="doc.zone_id.culture_id.name"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Surface :</strong></td>
+                                            <td><span t-field="doc.zone_id.surface_area"/> ha</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Type irrigation :</strong></td>
+                                            <td><span t-field="doc.system_id.irrigation_type"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Opérateur :</strong></td>
+                                            <td><span t-field="doc.operator_id.name"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Résultat :</strong></td>
+                                            <td>
+                                                <span t-field="doc.result" class="badge"
+                                                      t-attf-class="badge-{{'success' if doc.result == 'success' else 'warning' if doc.result == 'partial' else 'danger'}}"/>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Observations et notes -->
+                            <div class="row mb16" t-if="doc.notes">
+                                <div class="col-12">
+                                    <h5><strong>Observations et Notes</strong></h5>
+                                    <div class="well">
+                                        <span t-field="doc.notes"/>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="oe_structure"/>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+
+    </data>
+</odoo>

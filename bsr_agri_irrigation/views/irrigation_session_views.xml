@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Vue formulaire session d'irrigation -->
+        <record id="view_irrigation_session_form" model="ir.ui.view">
+            <field name="name">bsr.irrigation.session.form</field>
+            <field name="model">bsr.irrigation.session</field>
+            <field name="arch" type="xml">
+                <form string="Session d'irrigation">
+                    <header>
+                        <button name="action_start" string="Démarrer" type="object" 
+                                class="oe_highlight" states="planned"/>
+                        <button name="action_complete" string="Terminer" type="object" 
+                                class="btn-success" states="in_progress"/>
+                        <button name="action_cancel" string="Annuler" type="object" 
+                                states="planned,in_progress"/>
+                        <button name="action_mark_failed" string="Arrêt d'urgence" type="object" 
+                                class="btn-danger" states="in_progress"/>
+                        <button name="%(action_report_irrigation_session)d" string="Imprimer Rapport" 
+                                type="action" class="btn-secondary" icon="fa-print" 
+                                states="completed,canceled,failed"/>
+                        <field name="state" widget="statusbar" statusbar_visible="planned,in_progress,completed"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_view_alerts" type="object" class="oe_stat_button" icon="fa-exclamation-triangle">
+                                <field name="alert_count" widget="statbutton" string="Alertes"/>
+                            </button>
+                            <button name="%(action_irrigation_program)d" type="action" class="oe_stat_button" 
+                                    icon="fa-calendar" context="{'search_default_program_id': program_id}">
+                                <div class="o_field_widget o_stat_info">
+                                    <span class="o_stat_text">Programme</span>
+                                </div>
+                            </button>
+                        </div>
+                        
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only"/>
+                            <h1><field name="name" placeholder="Nom de la session d'irrigation"/></h1>
+                            <label for="code" class="oe_edit_only"/>
+                            <h2><field name="code" placeholder="Code session"/></h2>
+                        </div>
+                        
+                        <group>
+                            <group string="Configuration">
+                                <field name="program_id"/>
+                                <field name="zone_id"/>
+                                <field name="system_id"/>
+                                <field name="farm_id" readonly="1"/>
+                                <field name="session_type"/>
+                            </group>
+                            <group string="Planification">
+                                <field name="planned_start_datetime"/>
+                                <field name="planned_end_datetime"/>
+                                <field name="duration_minutes_planned"/>
+                                <field name="water_volume_target"/>
+                            </group>
+                        </group>
+                        
+                        <notebook>
+                            <page string="Exécution" name="execution">
+                                <group>
+                                    <group string="Démarrage effectif">
+                                        <field name="start_datetime"/>
+                                        <field name="end_datetime"/>
+                                        <field name="duration_hours" widget="float_time"/>
+                                    </group>
+                                    <group string="Résultats">
+                                        <field name="water_consumed"/>
+                                        <field name="water_cost"/>
+                                        <field name="energy_cost"/>
+                                        <field name="total_cost"/>
+                                    </group>
+                                </group>
+                                <group string="Conditions d'arrêt">
+                                    <field name="issues_encountered"/>
+                                    <field name="operator_notes"/>
+                                </group>
+                            </page>
+                            <page string="Conditions météorologiques" name="weather">
+                                <group>
+                                    <group>
+                                        <field name="temperature_start"/>
+                                        <field name="temperature_end"/>
+                                        <field name="humidity_start"/>
+                                        <field name="humidity_end"/>
+                                    </group>
+                                    <group>
+                                        <field name="wind_speed"/>
+                                        <field name="precipitation_during"/>
+                                    </group>
+                                </group>
+                            </page>
+                            <page string="Performance" name="performance">
+                                <group>
+                                    <group string="Efficacité">
+                                        <field name="water_efficiency" widget="percentage" readonly="1"/>
+                                        <field name="time_variance" readonly="1"/>
+                                    </group>
+                                </group>
+                            </page>
+                            <page string="Notes" name="notes">
+                                <field name="operator_notes" placeholder="Notes opérateur"/>
+                                <field name="issues_encountered" placeholder="Problèmes rencontrés"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="activity_ids" widget="mail_activity"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- Vue tree session d'irrigation -->
+        <record id="view_irrigation_session_tree" model="ir.ui.view">
+            <field name="name">bsr.irrigation.session.tree</field>
+            <field name="model">bsr.irrigation.session</field>
+            <field name="arch" type="xml">
+                <tree string="Sessions d'irrigation" decoration-info="state=='planned'" 
+                      decoration-warning="state=='in_progress'" decoration-success="state=='completed'" 
+                      decoration-muted="state in ['cancelled','failed']">
+                    <field name="code"/>
+                    <field name="name"/>
+                    <field name="zone_id"/>
+                    <field name="program_id"/>
+                    <field name="session_type"/>
+                    <field name="planned_start_datetime"/>
+                    <field name="duration_minutes_planned"/>
+                    <field name="duration_hours" widget="float_time"/>
+                    <field name="water_volume_target"/>
+                    <field name="water_consumed"/>
+                    <field name="total_cost"/>
+                    <field name="water_efficiency" widget="percentage"/>
+                    <field name="state" decoration-success="state=='completed'" decoration-warning="state=='in_progress'"/>
+                    <button name="action_start" type="object" icon="fa-play" string="Démarrer" 
+                            attrs="{'invisible': [('state', '!=', 'planned')]}"/>
+                    <button name="action_complete" type="object" icon="fa-check" string="Terminer" 
+                            attrs="{'invisible': [('state', '!=', 'in_progress')]}"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Vue kanban session d'irrigation -->
+        <record id="view_irrigation_session_kanban" model="ir.ui.view">
+            <field name="name">bsr.irrigation.session.kanban</field>
+            <field name="model">bsr.irrigation.session</field>
+            <field name="arch" type="xml">
+                <kanban default_group_by="state">
+                    <field name="code"/>
+                    <field name="name"/>
+                    <field name="zone_id"/>
+                    <field name="state"/>
+                    <field name="session_type"/>
+                    <field name="planned_start_datetime"/>
+                    <field name="water_volume_target"/>
+                    <field name="water_efficiency"/>
+                    <field name="alert_count"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_card oe_kanban_global_click">
+                                <div class="oe_kanban_content">
+                                    <div class="o_kanban_record_top">
+                                        <div class="o_kanban_record_headings">
+                                            <strong class="o_kanban_record_title"><field name="name"/></strong>
+                                            <br/>
+                                            <span class="o_kanban_record_subtitle"><field name="code"/></span>
+                                        </div>
+                                        <span class="oe_kanban_list_many2one">
+                                            <field name="zone_id"/>
+                                        </span>
+                                    </div>
+                                    <div class="o_kanban_record_body">
+                                        <div class="d-flex">
+                                            <span class="badge badge-pill badge-light">
+                                                <field name="session_type"/>
+                                            </span>
+                                            <t t-if="record.alert_count.value &gt; 0">
+                                                <span class="badge badge-pill badge-danger ml-1">
+                                                    <i class="fa fa-exclamation-triangle"/> <field name="alert_count"/>
+                                                </span>
+                                            </t>
+                                        </div>
+                                        <br/>
+                                        <i class="fa fa-clock-o"/> Début: <field name="planned_start_datetime"/>
+                                        <br/>
+                                        <i class="fa fa-tint"/> <field name="water_volume_target"/>L prévus
+                                        <br/>
+                                        <t t-if="record.success.value === True">
+                                            <span class="text-success"><i class="fa fa-check"/> Réussie</span>
+                                        </t>
+                                        <t t-if="record.success.value === False">
+                                            <span class="text-danger"><i class="fa fa-times"/> Échec</span>
+                                        </t>
+                                    </div>
+                                    <div class="o_kanban_record_bottom">
+                                        <div class="oe_kanban_bottom_right">
+                                            <button name="action_start" type="object" 
+                                                    class="btn btn-sm btn-success" title="Démarrer" 
+                                                    t-if="record.state.raw_value === 'planned'">
+                                                <i class="fa fa-play"/>
+                                            </button>
+                                            <button name="action_complete" type="object" 
+                                                    class="btn btn-sm btn-primary" title="Terminer" 
+                                                    t-if="record.state.raw_value === 'in_progress'">
+                                                <i class="fa fa-check"/>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- Vue calendar session d'irrigation -->
+        <record id="view_irrigation_session_calendar" model="ir.ui.view">
+            <field name="name">bsr.irrigation.session.calendar</field>
+            <field name="model">bsr.irrigation.session</field>
+            <field name="arch" type="xml">
+                <calendar string="Planning des sessions" date_start="planned_start_datetime" 
+                         date_stop="planned_end_datetime" color="state" mode="week"
+                         event_open_popup="true" quick_add="False">
+                    <field name="name"/>
+                    <field name="zone_id"/>
+                    <field name="state"/>
+                </calendar>
+            </field>
+        </record>
+
+        <!-- Vue search session d'irrigation -->
+        <record id="view_irrigation_session_search" model="ir.ui.view">
+            <field name="name">bsr.irrigation.session.search</field>
+            <field name="model">bsr.irrigation.session</field>
+            <field name="arch" type="xml">
+                <search string="Recherche sessions d'irrigation">
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="zone_id"/>
+                    <field name="program_id"/>
+                    <field name="system_id"/>
+                    <field name="farm_id"/>
+                    <separator/>
+                    <filter string="Planifiées" name="planned" domain="[('state', '=', 'planned')]"/>
+                    <filter string="En cours" name="in_progress" domain="[('state', '=', 'in_progress')]"/>
+                    <filter string="Terminées" name="completed" domain="[('state', '=', 'completed')]"/>
+                    <filter string="Annulées" name="cancelled" domain="[('state', '=', 'cancelled')]"/>
+                    <filter string="Échec" name="failed" domain="[('state', '=', 'failed')]"/>
+                    <separator/>
+                    <filter string="Manuel" name="manual" domain="[('session_type', '=', 'manual')]"/>
+                    <filter string="Automatique" name="automatic" domain="[('session_type', '=', 'automatic')]"/>
+                    <filter string="Urgence" name="emergency" domain="[('session_type', '=', 'emergency')]"/>
+                    <filter string="Test" name="test" domain="[('session_type', '=', 'test')]"/>
+                    <separator/>
+                    <filter string="Avec alertes" name="with_alerts" domain="[('alert_count', '>', 0)]"/>
+                    <separator/>
+                    <filter string="Aujourd'hui" name="today" 
+                            domain="[('planned_start_datetime', '&gt;=', (datetime.date.today()).strftime('%Y-%m-%d')), ('planned_start_datetime', '&lt;', (datetime.date.today() + datetime.timedelta(days=1)).strftime('%Y-%m-%d'))]"/>
+                    <filter string="Cette semaine" name="this_week" 
+                            domain="[('planned_start_datetime', '&gt;=', (datetime.date.today() - datetime.timedelta(days=datetime.date.today().weekday())).strftime('%Y-%m-%d')), ('planned_start_datetime', '&lt;', (datetime.date.today() + datetime.timedelta(days=7-datetime.date.today().weekday())).strftime('%Y-%m-%d'))]"/>
+                    <separator/>
+                    <group expand="0" string="Grouper par">
+                        <filter string="Ferme" name="group_farm" context="{'group_by': 'farm_id'}"/>
+                        <filter string="Zone" name="group_zone" context="{'group_by': 'zone_id'}"/>
+                        <filter string="Programme" name="group_program" context="{'group_by': 'program_id'}"/>
+                        <filter string="Système" name="group_system" context="{'group_by': 'system_id'}"/>
+                        <filter string="Type" name="group_type" context="{'group_by': 'session_type'}"/>
+                        <filter string="État" name="group_state" context="{'group_by': 'state'}"/>
+                        <filter string="Date début" name="group_start_date" context="{'group_by': 'planned_start_datetime:day'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Action pour sessions d'irrigation -->
+        <record id="action_irrigation_session" model="ir.actions.act_window">
+            <field name="name">Sessions d'irrigation</field>
+            <field name="res_model">bsr.irrigation.session</field>
+            <field name="view_mode">kanban,tree,form,calendar</field>
+            <field name="context">{'search_default_today': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Aucune session d'irrigation trouvée !
+                </p>
+                <p>
+                    Les sessions sont généralement créées automatiquement par les programmes
+                    d'irrigation ou peuvent être créées manuellement pour des besoins spécifiques.
+                </p>
+            </field>
+        </record>
+
+    </data>
+</odoo>

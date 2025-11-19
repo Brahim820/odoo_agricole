@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Cron pour mettre à jour les cultures actuelles des parcelles -->
+        <record id="ir_cron_update_current_cultures" model="ir.cron">
+            <field name="name">Mettre à jour les cultures actuelles des parcelles</field>
+            <field name="model_id" ref="model_bsr_parcel"/>
+            <field name="state">code</field>
+            <field name="code">
+                model.search([])._update_current_culture()
+            </field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field name="active">True</field>
+        </record>
+
+        <!-- Cron pour la création automatique des campagnes suivantes -->
+        <record id="ir_cron_create_next_campaigns" model="ir.cron">
+            <field name="name">Création automatique des campagnes suivantes</field>
+            <field name="model_id" ref="model_bsr_culture_campaign"/>
+            <field name="state">code</field>
+            <field name="code">
+# Rechercher les campagnes terminées récemment et créer les suivantes
+# Utiliser seulement les fonctions autorisées dans les crons Odoo
+
+completed_campaigns = model.search([
+    ('state', '=', 'completed'),
+    ('culture_id.culture_type_id.is_cyclical', '=', True)
+])
+
+for campaign in completed_campaigns:
+    next_campaigns = model.search([
+        ('culture_id', '=', campaign.culture_id.id),
+        ('cycle_number', '>', campaign.cycle_number),
+        ('state', 'in', ['planned', 'active'])
+    ])
+    
+    if not next_campaigns and campaign.end_date:
+        model.create_next_campaign(campaign.culture_id.id)
+            </field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field name="active">True</field>
+            <field name="priority">10</field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <!-- Types de Culture - Maraîchage -->
+        <record id="culture_type_tomate" model="bsr.culture.type">
+            <field name="name">Tomate</field>
+            <field name="code">TOM</field>
+            <field name="category">maraichage</field>
+            <field name="description">Culture de tomates pour consommation fraîche ou transformation</field>
+        </record>
+        
+        <record id="culture_type_carotte" model="bsr.culture.type">
+            <field name="name">Carotte</field>
+            <field name="code">CAR</field>
+            <field name="category">maraichage</field>
+            <field name="description">Culture de carottes</field>
+        </record>
+        
+        <record id="culture_type_laitue" model="bsr.culture.type">
+            <field name="name">Laitue</field>
+            <field name="code">LAI</field>
+            <field name="category">maraichage</field>
+            <field name="description">Culture de laitues et salades vertes</field>
+        </record>
+        
+        <record id="culture_type_courgette" model="bsr.culture.type">
+            <field name="name">Courgette</field>
+            <field name="code">COU</field>
+            <field name="category">maraichage</field>
+            <field name="description">Culture de courgettes</field>
+        </record>
+        
+        <record id="culture_type_aubergine" model="bsr.culture.type">
+            <field name="name">Aubergine</field>
+            <field name="code">AUB</field>
+            <field name="category">maraichage</field>
+            <field name="description">Culture d'aubergines</field>
+        </record>
+        
+        <record id="culture_type_poivron" model="bsr.culture.type">
+            <field name="name">Poivron</field>
+            <field name="code">POI</field>
+            <field name="category">maraichage</field>
+            <field name="description">Culture de poivrons et piments</field>
+        </record>
+        
+        <record id="culture_type_radis" model="bsr.culture.type">
+            <field name="name">Radis</field>
+            <field name="code">RAD</field>
+            <field name="category">maraichage</field>
+            <field name="description">Culture de radis</field>
+        </record>
+        
+        <record id="culture_type_epinard" model="bsr.culture.type">
+            <field name="name">Épinard</field>
+            <field name="code">EPI</field>
+            <field name="category">maraichage</field>
+            <field name="description">Culture d'épinards</field>
+        </record>
+
+        <!-- Types de Culture - Pépinière -->
+        <record id="culture_type_plants_tomate" model="bsr.culture.type">
+            <field name="name">Plants de Tomate</field>
+            <field name="code">PLT_TOM</field>
+            <field name="category">pepiniere</field>
+            <field name="description">Production de plants de tomates pour la vente ou le repiquage</field>
+        </record>
+        
+        <record id="culture_type_plants_salade" model="bsr.culture.type">
+            <field name="name">Plants de Salade</field>
+            <field name="code">PLT_SAL</field>
+            <field name="category">pepiniere</field>
+            <field name="description">Production de plants de salade</field>
+        </record>
+        
+        <record id="culture_type_plants_aromates" model="bsr.culture.type">
+            <field name="name">Plants Aromatiques</field>
+            <field name="code">PLT_ARO</field>
+            <field name="category">pepiniere</field>
+            <field name="description">Production de plants aromatiques (basilic, persil, thym, etc.)</field>
+        </record>
+        
+        <record id="culture_type_plants_fleurs" model="bsr.culture.type">
+            <field name="name">Plants de Fleurs</field>
+            <field name="code">PLT_FLE</field>
+            <field name="category">pepiniere</field>
+            <field name="description">Production de plants de fleurs ornementales</field>
+        </record>
+
+        <!-- Types de Culture - Arboriculture -->
+        <record id="culture_type_olivier" model="bsr.culture.type">
+            <field name="name">Olivier</field>
+            <field name="code">OLI</field>
+            <field name="category">arboriculture</field>
+            <field name="description">Culture d'oliviers pour la production d'olives et d'huile</field>
+        </record>
+        
+        <record id="culture_type_citronnier" model="bsr.culture.type">
+            <field name="name">Citronnier</field>
+            <field name="code">CIT</field>
+            <field name="category">arboriculture</field>
+            <field name="description">Culture de citronniers</field>
+        </record>
+        
+        <record id="culture_type_oranger" model="bsr.culture.type">
+            <field name="name">Oranger</field>
+            <field name="code">ORA</field>
+            <field name="category">arboriculture</field>
+            <field name="description">Culture d'orangers</field>
+        </record>
+        
+        <record id="culture_type_amandier" model="bsr.culture.type">
+            <field name="name">Amandier</field>
+            <field name="code">AMA</field>
+            <field name="category">arboriculture</field>
+            <field name="description">Culture d'amandiers</field>
+        </record>
+        
+        <record id="culture_type_vigne" model="bsr.culture.type">
+            <field name="name">Vigne</field>
+            <field name="code">VIG</field>
+            <field name="category">arboriculture</field>
+            <field name="description">Culture de vignes pour raisins de table ou vinification</field>
+        </record>
+
+        <!-- Types de Culture - Céréales -->
+        <record id="culture_type_ble" model="bsr.culture.type">
+            <field name="name">Blé</field>
+            <field name="code">BLE</field>
+            <field name="category">cereales</field>
+            <field name="description">Culture de blé tendre ou blé dur</field>
+        </record>
+        
+        <record id="culture_type_orge" model="bsr.culture.type">
+            <field name="name">Orge</field>
+            <field name="code">ORG</field>
+            <field name="category">cereales</field>
+            <field name="description">Culture d'orge</field>
+        </record>
+        
+        <record id="culture_type_avoine" model="bsr.culture.type">
+            <field name="name">Avoine</field>
+            <field name="code">AVO</field>
+            <field name="category">cereales</field>
+            <field name="description">Culture d'avoine</field>
+        </record>
+        
+        <record id="culture_type_mais" model="bsr.culture.type">
+            <field name="name">Maïs</field>
+            <field name="code">MAI</field>
+            <field name="category">cereales</field>
+            <field name="description">Culture de maïs grain ou fourrager</field>
+        </record>
+
+        <!-- Types de Culture - Légumineuses -->
+        <record id="culture_type_lentille" model="bsr.culture.type">
+            <field name="name">Lentille</field>
+            <field name="code">LEN</field>
+            <field name="category">legumineuses</field>
+            <field name="description">Culture de lentilles</field>
+        </record>
+        
+        <record id="culture_type_pois_chiche" model="bsr.culture.type">
+            <field name="name">Pois Chiche</field>
+            <field name="code">POI_CHI</field>
+            <field name="category">legumineuses</field>
+            <field name="description">Culture de pois chiches</field>
+        </record>
+        
+        <record id="culture_type_haricot" model="bsr.culture.type">
+            <field name="name">Haricot</field>
+            <field name="code">HAR</field>
+            <field name="category">legumineuses</field>
+            <field name="description">Culture de haricots verts ou secs</field>
+        </record>
+        
+        <record id="culture_type_feve" model="bsr.culture.type">
+            <field name="name">Fève</field>
+            <field name="code">FEV</field>
+            <field name="category">legumineuses</field>
+            <field name="description">Culture de fèves</field>
+        </record>
+
+        <!-- Types de Culture - Fourrage -->
+        <record id="culture_type_luzerne" model="bsr.culture.type">
+            <field name="name">Luzerne</field>
+            <field name="code">LUZ</field>
+            <field name="category">fourrage</field>
+            <field name="description">Culture de luzerne pour l'alimentation animale</field>
+        </record>
+        
+        <record id="culture_type_ray_grass" model="bsr.culture.type">
+            <field name="name">Ray-grass</field>
+            <field name="code">RAY</field>
+            <field name="category">fourrage</field>
+            <field name="description">Culture de ray-grass</field>
+        </record>
+        
+        <record id="culture_type_trefle" model="bsr.culture.type">
+            <field name="name">Trèfle</field>
+            <field name="code">TRE</field>
+            <field name="category">fourrage</field>
+            <field name="description">Culture de trèfle</field>
+        </record>
+
+        <!-- Types de Culture - Autres -->
+        <record id="culture_type_tournesol" model="bsr.culture.type">
+            <field name="name">Tournesol</field>
+            <field name="code">TOU</field>
+            <field name="category">autres</field>
+            <field name="description">Culture de tournesol pour huile</field>
+        </record>
+        
+        <record id="culture_type_colza" model="bsr.culture.type">
+            <field name="name">Colza</field>
+            <field name="code">COL</field>
+            <field name="category">autres</field>
+            <field name="description">Culture de colza</field>
+        </record>
+        
+        <record id="culture_type_lavande" model="bsr.culture.type">
+            <field name="name">Lavande</field>
+            <field name="code">LAV</field>
+            <field name="category">autres</field>
+            <field name="description">Culture de lavande pour huile essentielle</field>
+        </record>
+
+    </data>
+</odoo>

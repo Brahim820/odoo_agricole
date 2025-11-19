@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Vue tree pour les campagnes de culture -->
+    <record id="view_culture_campaign_tree" model="ir.ui.view">
+        <field name="name">bsr.culture.campaign.tree</field>
+        <field name="model">bsr.culture.campaign</field>
+        <field name="arch" type="xml">
+            <tree string="Campagnes de Culture" default_order="year desc, season desc" 
+                  decoration-success="state == 'completed'" 
+                  decoration-info="state == 'active'"
+                  decoration-muted="state in ('suspended', 'cancelled')">
+                <field name="name"/>
+                <field name="culture_id"/>
+                <field name="year"/>
+                <field name="season"/>
+                <field name="cycle_number"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+                <field name="state" widget="badge"/>
+                <field name="expected_yield"/>
+                <field name="actual_yield"/>
+                <field name="yield_unit"/>
+                <field name="budget"/>
+                <field name="actual_cost"/>
+                <field name="revenue"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Vue form pour les campagnes de culture -->
+    <record id="view_culture_campaign_form" model="ir.ui.view">
+        <field name="name">bsr.culture.campaign.form</field>
+        <field name="model">bsr.culture.campaign</field>
+        <field name="arch" type="xml">
+            <form string="Campagne de Culture">
+                <header>
+                    <button name="action_start_campaign" type="object" string="Démarrer"
+                            class="btn-primary" attrs="{'invisible': [('state', '!=', 'planned')]}"/>
+                    <button name="action_complete_campaign" type="object" string="Terminer"
+                            class="btn-success" attrs="{'invisible': [('state', '!=', 'active')]}"/>
+                    <button name="action_suspend_campaign" type="object" string="Suspendre"
+                            class="btn-warning" attrs="{'invisible': [('state', '!=', 'active')]}"/>
+                    <button name="action_resume_campaign" type="object" string="Reprendre"
+                            class="btn-info" attrs="{'invisible': [('state', '!=', 'suspended')]}"/>
+                    <button name="action_cancel_campaign" type="object" string="Annuler"
+                            class="btn-secondary" attrs="{'invisible': [('state', 'in', ['completed', 'cancelled'])]}"/>
+                    <field name="state" widget="statusbar" statusbar_visible="planned,active,completed"/>
+                </header>
+                
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Nom de la campagne"/>
+                        </h1>
+                    </div>
+                    
+                    <group>
+                        <group name="main_info">
+                            <field name="culture_id" options="{'no_create': True}"/>
+                            <field name="year"/>
+                            <field name="season"/>
+                            <field name="cycle_number"/>
+                        </group>
+                        <group name="dates">
+                            <field name="start_date"/>
+                            <field name="expected_end_date"/>
+                            <field name="end_date" attrs="{'invisible': [('state', 'not in', ['completed', 'cancelled'])]}"/>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <page string="Production" name="production">
+                            <group>
+                                <group name="production_planning">
+                                    <field name="expected_yield"/>
+                                    <field name="actual_yield"/>
+                                    <field name="yield_unit"/>
+                                </group>
+                                <group name="finances">
+                                    <field name="budget"/>
+                                    <field name="actual_cost"/>
+                                    <field name="revenue"/>
+                                    <field name="currency_id" invisible="1"/>
+                                </group>
+                            </group>
+                        </page>
+                        
+                        <page string="Notes" name="notes">
+                            <field name="notes" placeholder="Notes et observations pour cette campagne..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Vue kanban pour les campagnes de culture -->
+    <record id="view_culture_campaign_kanban" model="ir.ui.view">
+        <field name="name">bsr.culture.campaign.kanban</field>
+        <field name="model">bsr.culture.campaign</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_small_column" default_group_by="state">
+                <field name="name"/>
+                <field name="culture_id"/>
+                <field name="year"/>
+                <field name="season"/>
+                <field name="state"/>
+                <field name="start_date"/>
+                <field name="expected_yield"/>
+                <field name="actual_yield"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_card oe_kanban_global_click">
+                            <div class="oe_kanban_content">
+                                <div class="oe_kanban_details">
+                                    <strong><field name="name"/></strong>
+                                    <div class="oe_kanban_bottom_left">
+                                        <span>Culture: <field name="culture_id"/></span><br/>
+                                        <span>Année: <field name="year"/> - <field name="season"/></span>
+                                    </div>
+                                    <div class="oe_kanban_bottom_right">
+                                        <span class="badge" t-att-class="record.state.raw_value === 'completed' ? 'badge-success' : 
+                                                                       record.state.raw_value === 'active' ? 'badge-info' :
+                                                                       record.state.raw_value === 'suspended' ? 'badge-warning' :
+                                                                       'badge-secondary'">
+                                            <field name="state"/>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Action pour les campagnes de culture -->
+    <record id="action_culture_campaign" model="ir.actions.act_window">
+        <field name="name">Campagnes de Culture</field>
+        <field name="res_model">bsr.culture.campaign</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Créer votre première campagne de culture
+            </p>
+            <p>
+                Les campagnes permettent de gérer les cycles de culture pour les cultures cycliques
+                comme l'arboriculture où la même culture produit plusieurs récoltes au fil des années.
+            </p>
+        </field>
+    </record>
+
+</odoo>

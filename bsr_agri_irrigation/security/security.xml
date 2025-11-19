@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Groupes utilisateurs pour l'irrigation -->
+        
+        <!-- Opérateur irrigation : droits de lecture et utilisation basique -->
+        <record id="group_irrigation_operator" model="res.groups">
+            <field name="name">Irrigation / Opérateur</field>
+            <field name="category_id" ref="bsr_agri_base.module_category_agriculture"/>
+            <field name="implied_ids" eval="[(4, ref('bsr_agri_base.group_agriculture_user'))]"/>
+            <field name="comment">Accès en lecture aux systèmes d'irrigation, création de sessions manuelles</field>
+        </record>
+
+        <!-- Technicien irrigation : droits étendus de gestion -->
+        <record id="group_irrigation_technician" model="res.groups">
+            <field name="name">Irrigation / Technicien</field>
+            <field name="category_id" ref="bsr_agri_base.module_category_agriculture"/>
+            <field name="implied_ids" eval="[(4, ref('group_irrigation_operator')), (4, ref('bsr_agri_base.group_agriculture_manager'))]"/>
+            <field name="comment">Gestion des zones, programmes, alertes et maintenance des systèmes d'irrigation</field>
+        </record>
+
+        <!-- Superviseur irrigation : tous les droits -->
+        <record id="group_irrigation_supervisor" model="res.groups">
+            <field name="name">Irrigation / Superviseur</field>
+            <field name="category_id" ref="bsr_agri_base.module_category_agriculture"/>
+            <field name="implied_ids" eval="[(4, ref('group_irrigation_technician')), (4, ref('bsr_agri_base.group_agriculture_farm_manager'))]"/>
+            <field name="comment">Accès complet aux fonctionnalités d'irrigation, configuration et administration</field>
+        </record>
+
+        <!-- Règles d'accès basées sur les groupes (simplifiées) -->
+        
+        <!-- Règle d'accès aux systèmes d'irrigation pour opérateurs -->
+        <record id="irrigation_system_operator_rule" model="ir.rule">
+            <field name="name">Opérateurs - systèmes irrigation lecture seule</field>
+            <field name="model_id" ref="model_bsr_irrigation_system"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_irrigation_operator'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- Règle d'accès aux zones d'irrigation pour opérateurs -->
+        <record id="irrigation_zone_operator_rule" model="ir.rule">
+            <field name="name">Opérateurs - zones irrigation lecture seule</field>
+            <field name="model_id" ref="model_bsr_irrigation_zone"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_irrigation_operator'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- Règle d'accès aux programmes d'irrigation pour opérateurs -->
+        <record id="irrigation_program_operator_rule" model="ir.rule">
+            <field name="name">Opérateurs - programmes irrigation lecture seule</field>
+            <field name="model_id" ref="model_bsr_irrigation_program"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_irrigation_operator'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- Règle d'accès aux sessions d'irrigation pour opérateurs -->
+        <record id="irrigation_session_operator_rule" model="ir.rule">
+            <field name="name">Opérateurs - sessions irrigation avec création</field>
+            <field name="model_id" ref="model_bsr_irrigation_session"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_irrigation_operator'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- Règle d'accès aux alertes d'irrigation pour opérateurs -->
+        <record id="irrigation_alert_operator_rule" model="ir.rule">
+            <field name="name">Opérateurs - alertes irrigation lecture et écriture</field>
+            <field name="model_id" ref="model_bsr_irrigation_alert"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_irrigation_operator'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- Règles pour les techniciens : droits étendus -->
+        
+        <!-- Techniciens : droits d'écriture sur systèmes -->
+        <record id="irrigation_system_technician_rule" model="ir.rule">
+            <field name="name">Techniciens - systèmes irrigation complets</field>
+            <field name="model_id" ref="model_bsr_irrigation_system"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_irrigation_technician'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- Techniciens : droits d'écriture sur zones -->
+        <record id="irrigation_zone_technician_rule" model="ir.rule">
+            <field name="name">Techniciens - zones irrigation complètes</field>
+            <field name="model_id" ref="model_bsr_irrigation_zone"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_irrigation_technician'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- Techniciens : droits d'écriture sur programmes -->
+        <record id="irrigation_program_technician_rule" model="ir.rule">
+            <field name="name">Techniciens - programmes irrigation complets</field>
+            <field name="model_id" ref="model_bsr_irrigation_program"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_irrigation_technician'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- Techniciens : droits d'écriture sur alertes -->
+        <record id="irrigation_alert_technician_rule" model="ir.rule">
+            <field name="name">Techniciens - alertes irrigation complètes</field>
+            <field name="model_id" ref="model_bsr_irrigation_alert"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_irrigation_technician'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- Règles pour superviseurs : accès complet -->
+        
+        <!-- Superviseurs : tous droits sur tous les modèles -->
+        <record id="irrigation_supervisor_all_rule" model="ir.rule">
+            <field name="name">Superviseurs - accès complet irrigation</field>
+            <field name="model_id" ref="model_bsr_irrigation_system"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_irrigation_supervisor'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <record id="irrigation_zone_supervisor_all_rule" model="ir.rule">
+            <field name="name">Superviseurs - accès complet zones</field>
+            <field name="model_id" ref="model_bsr_irrigation_zone"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_irrigation_supervisor'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <record id="irrigation_program_supervisor_all_rule" model="ir.rule">
+            <field name="name">Superviseurs - accès complet programmes</field>
+            <field name="model_id" ref="model_bsr_irrigation_program"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_irrigation_supervisor'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <record id="irrigation_session_supervisor_all_rule" model="ir.rule">
+            <field name="name">Superviseurs - accès complet sessions</field>
+            <field name="model_id" ref="model_bsr_irrigation_session"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_irrigation_supervisor'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <record id="irrigation_alert_supervisor_all_rule" model="ir.rule">
+            <field name="name">Superviseurs - accès complet alertes</field>
+            <field name="model_id" ref="model_bsr_irrigation_alert"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_irrigation_supervisor'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+    </data>
+</odoo>

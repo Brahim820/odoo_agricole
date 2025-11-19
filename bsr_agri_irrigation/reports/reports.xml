@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Rapport Session d'irrigation -->
+        <record id="action_report_irrigation_session" model="ir.actions.report">
+            <field name="name">Rapport de Session d'Irrigation</field>
+            <field name="model">bsr.irrigation.session</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">bsr_agri_irrigation.report_irrigation_session</field>
+            <field name="report_file">bsr_agri_irrigation.report_irrigation_session</field>
+            <field name="binding_model_id" ref="model_bsr_irrigation_session"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <!-- Rapport Planning Programme -->
+        <record id="action_report_irrigation_program" model="ir.actions.report">
+            <field name="name">Planning d'Irrigation</field>
+            <field name="model">bsr.irrigation.program</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">bsr_agri_irrigation.report_irrigation_program</field>
+            <field name="report_file">bsr_agri_irrigation.report_irrigation_program</field>
+            <field name="binding_model_id" ref="model_bsr_irrigation_program"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <!-- Rapport Alertes -->
+        <record id="action_report_irrigation_alert" model="ir.actions.report">
+            <field name="name">Rapport d'Alertes d'Irrigation</field>
+            <field name="model">bsr.irrigation.alert</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">bsr_agri_irrigation.report_irrigation_alert</field>
+            <field name="report_file">bsr_agri_irrigation.report_irrigation_alert</field>
+            <field name="binding_model_id" ref="model_bsr_irrigation_alert"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <!-- Rapport Système d'irrigation -->
+        <record id="action_report_irrigation_system" model="ir.actions.report">
+            <field name="name">Fiche Technique Système</field>
+            <field name="model">bsr.irrigation.system</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">bsr_agri_irrigation.report_irrigation_system</field>
+            <field name="report_file">bsr_agri_irrigation.report_irrigation_system</field>
+            <field name="binding_model_id" ref="model_bsr_irrigation_system"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <!-- Rapport Zone d'irrigation -->
+        <record id="action_report_irrigation_zone" model="ir.actions.report">
+            <field name="name">Fiche Zone d'Irrigation</field>
+            <field name="model">bsr.irrigation.zone</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">bsr_agri_irrigation.report_irrigation_zone</field>
+            <field name="report_file">bsr_agri_irrigation.report_irrigation_zone</field>
+            <field name="binding_model_id" ref="model_bsr_irrigation_zone"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <!-- Rapport Performance Globale -->
+        <record id="action_report_irrigation_performance" model="ir.actions.report">
+            <field name="name">Rapport de Performance d'Irrigation</field>
+            <field name="model">bsr.irrigation.session</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">bsr_agri_irrigation.report_irrigation_performance</field>
+            <field name="report_file">bsr_agri_irrigation.report_irrigation_performance</field>
+            <field name="binding_model_id" ref="model_bsr_irrigation_session"/>
+            <field name="binding_type">report</field>
+        </record>
+
+    </data>
+</odoo>

@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Rapport Programme d'Irrigation -->
+        <template id="report_irrigation_program">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="doc">
+                    <t t-call="web.basic_layout">
+                        <div class="page">
+                            <div class="oe_structure"/>
+                            
+                            <!-- En-tête du rapport -->
+                            <div class="row mb32">
+                                <div class="col-12">
+                                    <h2 class="text-center">
+                                        <strong>RAPPORT DE PROGRAMME D'IRRIGATION</strong>
+                                    </h2>
+                                    <h5 class="text-center text-muted">
+                                        Programme <span t-field="doc.name"/>
+                                    </h5>
+                                </div>
+                            </div>
+
+                            <!-- Configuration du programme -->
+                            <div class="row mb16">
+                                <div class="col-6">
+                                    <h4><strong>Configuration</strong></h4>
+                                    <table class="table table-borderless">
+                                        <tr>
+                                            <td width="40%"><strong>Ferme :</strong></td>
+                                            <td><span t-field="doc.farm_id.name"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Type :</strong></td>
+                                            <td><span t-field="doc.program_type"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Statut :</strong></td>
+                                            <td>
+                                                <span t-field="doc.state" class="badge"
+                                                      t-attf-class="badge-{{'success' if doc.state == 'active' else 'warning' if doc.state == 'draft' else 'secondary'}}"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Date début :</strong></td>
+                                            <td><span t-field="doc.start_date"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Date fin :</strong></td>
+                                            <td><span t-field="doc.end_date"/></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="col-6">
+                                    <h4><strong>Paramètres</strong></h4>
+                                    <table class="table table-borderless">
+                                        <tr>
+                                            <td width="40%"><strong>Fréquence :</strong></td>
+                                            <td><span t-field="doc.frequency_days"/> jour(s)</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Durée session :</strong></td>
+                                            <td><span t-field="doc.duration_hours"/> h</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Volume par session :</strong></td>
+                                            <td><span t-field="doc.water_volume"/> L</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Heure début :</strong></td>
+                                            <td><span t-field="doc.preferred_start_time"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Auto-ajustement :</strong></td>
+                                            <td>
+                                                <span class="badge" t-attf-class="badge-{{'success' if doc.auto_adjust else 'secondary'}}">
+                                                    <span t-if="doc.auto_adjust">Activé</span>
+                                                    <span t-else="">Désactivé</span>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Zone couverte -->
+                            <div class="row mb16" t-if="doc.zone_id">
+                                <div class="col-12">
+                                    <h4><strong>Zone d'Irrigation</strong></h4>
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Zone</th>
+                                                <th>Culture</th>
+                                                <th class="text-center">Surface (ha)</th>
+                                                <th class="text-center">Système</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><span t-field="doc.zone_id.name"/></td>
+                                                <td><span t-field="doc.zone_id.culture_id.name"/></td>
+                                                <td class="text-center"><span t-field="doc.zone_id.surface_area"/></td>
+                                                <td class="text-center"><span t-field="doc.zone_id.system_id.name"/></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Sessions récentes -->
+                            <div class="row mb16" t-if="doc.session_ids">
+                                <div class="col-12">
+                                    <h4><strong>Sessions Récentes</strong></h4>
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Date</th>
+                                                <th>Zone</th>
+                                                <th class="text-center">Durée (h)</th>
+                                                <th class="text-center">Volume (L)</th>
+                                                <th class="text-center">Résultat</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr t-foreach="doc.session_ids[:10]" t-as="session">
+                                                <td><span t-field="session.actual_start_datetime" t-options="{'widget': 'date'}"/></td>
+                                                <td><span t-field="session.zone_id.name"/></td>
+                                                <td class="text-center"><span t-field="session.duration_hours"/></td>
+                                                <td class="text-center"><span t-field="session.water_consumed"/></td>
+                                                <td class="text-center">
+                                                    <span t-field="session.result" class="badge"
+                                                          t-attf-class="badge-{{'success' if session.result == 'success' else 'warning' if session.result == 'partial' else 'danger'}}"/>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="oe_structure"/>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+
+    </data>
+</odoo>

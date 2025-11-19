@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Action Mouvement Intrant (défini en premier pour être référencé) -->
+    <record id="action_pepiniere_mouvement_intrant" model="ir.actions.act_window">
+        <field name="name">Mouvements d'intrants</field>
+        <field name="res_model">pepiniere.mouvement.intrant</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Enregistrer un mouvement d'intrant
+            </p>
+            <p>
+                Suivez les entrées et sorties de vos intrants.
+            </p>
+        </field>
+    </record>
+
+    <!-- Vue formulaire Intrant -->
+    <record id="view_pepiniere_intrant_form" model="ir.ui.view">
+        <field name="name">pepiniere.intrant.form</field>
+        <field name="model">pepiniere.intrant</field>
+        <field name="arch" type="xml">
+            <form string="Intrant">
+                <header>
+                    <button name="%(action_pepiniere_mouvement_intrant)d" string="Nouveau mouvement" 
+                            type="action" class="oe_highlight"
+                            context="{'default_intrant_id': active_id}"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="%(action_pepiniere_mouvement_intrant)d" type="action"
+                                class="oe_stat_button" icon="fa-exchange"
+                                context="{'default_intrant_id': active_id, 'search_default_intrant_id': active_id}">
+                            <field name="mouvement_ids" widget="statinfo" string="Mouvements"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Nom de l'intrant"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="code"/>
+                            <field name="categorie"/>
+                            <field name="fournisseur_id"/>
+                        </group>
+                        <group>
+                            <field name="unite"/>
+                            <field name="prix_unitaire"/>
+                            <field name="devise_id"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <group string="Stock">
+                        <group>
+                            <field name="stock_actuel"/>
+                            <field name="stock_minimum"/>
+                        </group>
+                        <group>
+                            <field name="stock_alerte" widget="boolean_toggle"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="description" placeholder="Description de l'intrant..."/>
+                    </group>
+                    <notebook>
+                        <page string="Mouvements">
+                            <field name="mouvement_ids">
+                                <tree>
+                                    <field name="name"/>
+                                    <field name="date"/>
+                                    <field name="type_mouvement"/>
+                                    <field name="quantite"/>
+                                    <field name="cout_total"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Vue liste Intrant -->
+    <record id="view_pepiniere_intrant_tree" model="ir.ui.view">
+        <field name="name">pepiniere.intrant.tree</field>
+        <field name="model">pepiniere.intrant</field>
+        <field name="arch" type="xml">
+            <tree string="Intrants" decoration-danger="stock_alerte==True">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="categorie"/>
+                <field name="stock_actuel"/>
+                <field name="unite"/>
+                <field name="stock_minimum"/>
+                <field name="stock_alerte" invisible="1"/>
+                <field name="prix_unitaire"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Vue recherche Intrant -->
+    <record id="view_pepiniere_intrant_search" model="ir.ui.view">
+        <field name="name">pepiniere.intrant.search</field>
+        <field name="model">pepiniere.intrant</field>
+        <field name="arch" type="xml">
+            <search string="Rechercher intrant">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="categorie"/>
+                <filter string="Alerte stock" name="alerte" domain="[('stock_alerte', '=', True)]"/>
+                <filter string="Actif" name="active" domain="[('active', '=', True)]"/>
+                <group expand="0" string="Grouper par">
+                    <filter string="Catégorie" name="group_categorie" context="{'group_by': 'categorie'}"/>
+                    <filter string="Fournisseur" name="group_fournisseur" context="{'group_by': 'fournisseur_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action Intrant -->
+    <record id="action_pepiniere_intrant" model="ir.actions.act_window">
+        <field name="name">Intrants</field>
+        <field name="res_model">pepiniere.intrant</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'search_default_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Créer un nouvel intrant
+            </p>
+            <p>
+                Gérez vos stocks de semences, substrats, engrais et autres intrants.
+            </p>
+        </field>
+    </record>
+
+    <!-- Vue formulaire Mouvement Intrant -->
+    <record id="view_pepiniere_mouvement_intrant_form" model="ir.ui.view">
+        <field name="name">pepiniere.mouvement.intrant.form</field>
+        <field name="model">pepiniere.mouvement.intrant</field>
+        <field name="arch" type="xml">
+            <form string="Mouvement d'intrant">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="intrant_id"/>
+                            <field name="date"/>
+                            <field name="type_mouvement"/>
+                        </group>
+                        <group>
+                            <field name="quantite"/>
+                            <field name="unite"/>
+                            <field name="origine"/>
+                            <field name="lot_id"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="cout_unitaire"/>
+                            <field name="cout_total"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="notes" placeholder="Notes..."/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Vue liste Mouvement Intrant -->
+    <record id="view_pepiniere_mouvement_intrant_tree" model="ir.ui.view">
+        <field name="name">pepiniere.mouvement.intrant.tree</field>
+        <field name="model">pepiniere.mouvement.intrant</field>
+        <field name="arch" type="xml">
+            <tree string="Mouvements d'intrants" decoration-success="type_mouvement=='entree'" 
+                  decoration-warning="type_mouvement=='sortie'">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="intrant_id"/>
+                <field name="type_mouvement"/>
+                <field name="quantite"/>
+                <field name="unite"/>
+                <field name="cout_total"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Vue recherche Mouvement Intrant -->
+    <record id="view_pepiniere_mouvement_intrant_search" model="ir.ui.view">
+        <field name="name">pepiniere.mouvement.intrant.search</field>
+        <field name="model">pepiniere.mouvement.intrant</field>
+        <field name="arch" type="xml">
+            <search string="Rechercher mouvement">
+                <field name="name"/>
+                <field name="intrant_id"/>
+                <filter string="Entrée" name="entree" domain="[('type_mouvement', '=', 'entree')]"/>
+                <filter string="Sortie" name="sortie" domain="[('type_mouvement', '=', 'sortie')]"/>
+                <group expand="0" string="Grouper par">
+                    <filter string="Intrant" name="group_intrant" context="{'group_by': 'intrant_id'}"/>
+                    <filter string="Type" name="group_type" context="{'group_by': 'type_mouvement'}"/>
+                    <filter string="Date" name="group_date" context="{'group_by': 'date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+</odoo>

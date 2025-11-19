@@ -1,0 +1,41 @@
+# Fichiers et dossiers à ignorer
+
+# Cache Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Environnements virtuels
+.env
+venv/
+env/
+ENV/
+
+# Fichiers de configuration local
+.vscode/
+.idea/
+
+# Logs
+*.log
+logs/
+
+# Fichiers temporaires
+*.tmp
+*.temp
+*~
+
+# Base de données
+*.db
+*.sqlite3
+
+# Fichiers de backup
+*.backup
+*.bak
+
+# Fichiers système
+.DS_Store
+Thumbs.db
+
+# Fichiers Odoo spécifiques
+filestore/

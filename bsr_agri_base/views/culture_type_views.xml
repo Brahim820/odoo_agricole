@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Vue Tree des Types de Culture -->
+    <record id="view_culture_type_tree" model="ir.ui.view">
+        <field name="name">bsr.culture.type.tree</field>
+        <field name="model">bsr.culture.type</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="category"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Vue Form des Types de Culture -->
+    <record id="view_culture_type_form" model="ir.ui.view">
+        <field name="name">bsr.culture.type.form</field>
+        <field name="model">bsr.culture.type</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <widget name="web_ribbon" title="Archivé" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Nom du type de culture"/>
+                        </h1>
+                    </div>
+                    
+                    <group>
+                        <group name="left">
+                            <field name="code"/>
+                            <field name="category"/>
+                        </group>
+                        <group name="right">
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    
+                    <group>
+                        <field name="description" placeholder="Description du type de culture..."/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action pour les Types de Culture -->
+    <record id="action_culture_type" model="ir.actions.act_window">
+        <field name="name">Types de Culture</field>
+        <field name="res_model">bsr.culture.type</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Créer votre premier type de culture !
+            </p>
+            <p>
+                Les types de culture vous permettent de catégoriser vos différentes cultures
+                (maraîchage, pépinière, arboriculture, etc.).
+            </p>
+        </field>
+    </record>
+
+</odoo>

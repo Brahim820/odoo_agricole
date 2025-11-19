@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Menu Irrigation (sous le menu Agriculture existant) -->
+        <menuitem id="menu_irrigation" name="Irrigation" parent="bsr_agri_base.menu_agriculture_root" sequence="30"/>
+
+        <!-- Sous-menus Irrigation -->
+        
+        <!-- Gestion -->
+        <menuitem id="menu_irrigation_management" name="Gestion" parent="menu_irrigation" sequence="10"/>
+        
+        <menuitem id="menu_irrigation_zone" 
+                  name="Zones d'irrigation" 
+                  parent="menu_irrigation_management" 
+                  action="action_irrigation_zone" 
+                  sequence="10"
+                  groups="bsr_agri_irrigation.group_irrigation_operator"/>
+
+        <menuitem id="menu_irrigation_system" 
+                  name="Systèmes d'irrigation" 
+                  parent="menu_irrigation_management" 
+                  action="action_irrigation_system" 
+                  sequence="20"
+                  groups="bsr_agri_irrigation.group_irrigation_operator"/>
+
+        <menuitem id="menu_irrigation_program" 
+                  name="Programmes d'irrigation" 
+                  parent="menu_irrigation_management" 
+                  action="action_irrigation_program" 
+                  sequence="30"
+                  groups="bsr_agri_irrigation.group_irrigation_operator"/>
+
+        <!-- Opérations -->
+        <menuitem id="menu_irrigation_operations" name="Opérations" parent="menu_irrigation" sequence="20"/>
+        
+        <menuitem id="menu_irrigation_session" 
+                  name="Sessions d'irrigation" 
+                  parent="menu_irrigation_operations" 
+                  action="action_irrigation_session" 
+                  sequence="10"
+                  groups="bsr_agri_irrigation.group_irrigation_operator"/>
+
+        <menuitem id="menu_irrigation_session_calendar" 
+                  name="Planning irrigation" 
+                  parent="menu_irrigation_operations" 
+                  action="action_irrigation_session" 
+                  sequence="20"
+                  groups="bsr_agri_irrigation.group_irrigation_operator"/>
+
+        <!-- Monitoring -->
+        <menuitem id="menu_irrigation_monitoring" name="Monitoring" parent="menu_irrigation" sequence="30"/>
+        
+        <menuitem id="menu_irrigation_alert" 
+                  name="Alertes d'irrigation" 
+                  parent="menu_irrigation_monitoring" 
+                  action="action_irrigation_alert" 
+                  sequence="10"
+                  groups="bsr_agri_irrigation.group_irrigation_operator"/>
+
+        <menuitem id="menu_irrigation_alert_critical" 
+                  name="Alertes critiques" 
+                  parent="menu_irrigation_monitoring" 
+                  action="action_irrigation_alert_critical" 
+                  sequence="20"
+                  groups="bsr_agri_irrigation.group_irrigation_operator"/>
+
+        <!-- Configuration (Superviseurs uniquement) -->
+        <menuitem id="menu_irrigation_config" name="Configuration" parent="menu_irrigation" sequence="40" 
+                  groups="bsr_agri_irrigation.group_irrigation_supervisor"/>
+
+        <menuitem id="menu_irrigation_system_config" 
+                  name="Configuration systèmes" 
+                  parent="menu_irrigation_config" 
+                  action="action_irrigation_system" 
+                  sequence="10"
+                  groups="bsr_agri_irrigation.group_irrigation_supervisor"/>
+
+        <menuitem id="menu_irrigation_zone_config" 
+                  name="Configuration zones" 
+                  parent="menu_irrigation_config" 
+                  action="action_irrigation_zone" 
+                  sequence="20"
+                  groups="bsr_agri_irrigation.group_irrigation_supervisor"/>
+
+        <!-- Rapports (Techniciens et Superviseurs) -->
+        <menuitem id="menu_irrigation_reports" name="Rapports" parent="menu_irrigation" sequence="50" 
+                  groups="bsr_agri_irrigation.group_irrigation_technician"/>
+
+        <menuitem id="menu_irrigation_reports_session" 
+                  name="Rapports de sessions" 
+                  parent="menu_irrigation_reports" 
+                  action="action_report_irrigation_session" 
+                  sequence="10"
+                  groups="bsr_agri_irrigation.group_irrigation_technician"/>
+
+        <menuitem id="menu_irrigation_reports_program" 
+                  name="Rapports de programmes" 
+                  parent="menu_irrigation_reports" 
+                  action="action_report_irrigation_program" 
+                  sequence="20"
+                  groups="bsr_agri_irrigation.group_irrigation_technician"/>
+
+        <menuitem id="menu_irrigation_reports_alert" 
+                  name="Rapports d'alertes" 
+                  parent="menu_irrigation_reports" 
+                  action="action_report_irrigation_alert" 
+                  sequence="30"
+                  groups="bsr_agri_irrigation.group_irrigation_technician"/>
+
+        <menuitem id="menu_irrigation_reports_performance" 
+                  name="Rapports de performance" 
+                  parent="menu_irrigation_reports" 
+                  action="action_report_irrigation_performance" 
+                  sequence="40"
+                  groups="bsr_agri_irrigation.group_irrigation_supervisor"/>
+
+        <!-- Actions pour le planning avec vue calendar par défaut -->
+        <record id="action_irrigation_session_calendar" model="ir.actions.act_window">
+            <field name="name">Planning d'irrigation</field>
+            <field name="res_model">bsr.irrigation.session</field>
+            <field name="view_mode">calendar,kanban,tree,form</field>
+            <field name="view_id" ref="view_irrigation_session_calendar"/>
+            <field name="context">{'search_default_this_week': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Planifiez vos sessions d'irrigation !
+                </p>
+                <p>
+                    Visualisez et gérez le planning d'irrigation de toutes vos zones
+                    dans une vue calendrier pratique.
+                </p>
+            </field>
+        </record>
+
+        <!-- Mettre à jour le menu planning pour utiliser l'action calendar -->
+        <record id="menu_irrigation_session_calendar" model="ir.ui.menu">
+            <field name="action" ref="action_irrigation_session_calendar"/>
+        </record>
+
+        <!-- Actions raccourcis pour tableau de bord (si intégration future) -->
+        <record id="action_irrigation_dashboard" model="ir.actions.act_window">
+            <field name="name">Tableau de bord irrigation</field>
+            <field name="res_model">bsr.irrigation.session</field>
+            <field name="view_mode">kanban</field>
+            <field name="domain">[('state', 'in', ['planned', 'in_progress'])]</field>
+            <field name="context">{'search_default_today': 1}</field>
+        </record>
+
+        <!-- Action pour les sessions en cours -->
+        <record id="action_irrigation_session_current" model="ir.actions.act_window">
+            <field name="name">Sessions en cours</field>
+            <field name="res_model">bsr.irrigation.session</field>
+            <field name="view_mode">kanban,tree,form</field>
+            <field name="domain">[('state', '=', 'in_progress')]</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Aucune session en cours !
+                </p>
+                <p>
+                    Démarrez une session d'irrigation depuis les programmes actifs
+                    ou créez une session manuelle.
+                </p>
+            </field>
+        </record>
+
+        <!-- Action pour les programmes actifs -->
+        <record id="action_irrigation_program_active" model="ir.actions.act_window">
+            <field name="name">Programmes actifs</field>
+            <field name="res_model">bsr.irrigation.program</field>
+            <field name="view_mode">kanban,tree,form</field>
+            <field name="domain">[('state', '=', 'active')]</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Aucun programme actif !
+                </p>
+                <p>
+                    Activez vos programmes d'irrigation pour automatiser
+                    l'arrosage de vos zones agricoles.
+                </p>
+            </field>
+        </record>
+
+        <!-- Menu raccourci pour sessions en cours -->
+        <menuitem id="menu_irrigation_session_current" 
+                  name="Sessions en cours" 
+                  parent="menu_irrigation_operations" 
+                  action="action_irrigation_session_current" 
+                  sequence="5"
+                  groups="bsr_agri_irrigation.group_irrigation_operator"/>
+
+        <!-- Menu raccourci pour programmes actifs -->
+        <menuitem id="menu_irrigation_program_active" 
+                  name="Programmes actifs" 
+                  parent="menu_irrigation_management" 
+                  action="action_irrigation_program_active" 
+                  sequence="5"
+                  groups="bsr_agri_irrigation.group_irrigation_operator"/>
+
+    </data>
+</odoo>

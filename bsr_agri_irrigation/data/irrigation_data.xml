@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Données de référence pour l'irrigation -->
+
+        <!-- Catégorie d'équipement pour l'irrigation -->
+        <record id="equipment_category_irrigation" model="maintenance.equipment.category">
+            <field name="name">Équipements d'irrigation</field>
+            <field name="note">Systèmes et équipements d'irrigation agricole</field>
+        </record>
+
+        <!-- Sous-catégories d'équipements -->
+        <record id="equipment_category_pumps" model="maintenance.equipment.category">
+            <field name="name">Pompes d'irrigation</field>
+            <field name="note">Pompes et systèmes de pression pour irrigation</field>
+        </record>
+
+        <record id="equipment_category_drip_systems" model="maintenance.equipment.category">
+            <field name="name">Systèmes goutte-à-goutte</field>
+            <field name="note">Équipements d'irrigation goutte-à-goutte</field>
+        </record>
+
+        <record id="equipment_category_sprinkler_systems" model="maintenance.equipment.category">
+            <field name="name">Systèmes d'aspersion</field>
+            <field name="note">Équipements d'irrigation par aspersion</field>
+        </record>
+
+        <!-- Catégories de produits pour consommables irrigation -->
+        <record id="product_category_irrigation_consumables" model="product.category">
+            <field name="name">Consommables d'irrigation</field>
+            <field name="parent_id" ref="product.product_category_all"/>
+        </record>
+
+        <record id="product_category_irrigation_pipes" model="product.category">
+            <field name="name">Tuyaux et raccords</field>
+            <field name="parent_id" ref="product_category_irrigation_consumables"/>
+        </record>
+
+        <record id="product_category_irrigation_emitters" model="product.category">
+            <field name="name">Émetteurs et goutteurs</field>
+            <field name="parent_id" ref="product_category_irrigation_consumables"/>
+        </record>
+
+        <record id="product_category_irrigation_filters" model="product.category">
+            <field name="name">Filtres et vannes</field>
+            <field name="parent_id" ref="product_category_irrigation_consumables"/>
+        </record>
+
+        <!-- Catégorie UoM pour les débits d'irrigation -->
+        <record id="uom_categ_flow_rate" model="uom.category">
+            <field name="name">Débit / Flow Rate</field>
+        </record>
+
+        <!-- Unités de mesure spécifiques irrigation -->
+        <record id="uom_liter_per_hour" model="uom.uom">
+            <field name="name">Litre/heure</field>
+            <field name="category_id" ref="uom_categ_flow_rate"/>
+            <field name="factor">1.0</field>
+            <field name="uom_type">reference</field>
+            <field name="rounding">0.01</field>
+        </record>
+
+        <record id="uom_cubic_meter_per_hour" model="uom.uom">
+            <field name="name">m³/heure</field>
+            <field name="category_id" ref="uom_categ_flow_rate"/>
+            <field name="factor">0.001</field>
+            <field name="uom_type">smaller</field>
+            <field name="rounding">0.001</field>
+        </record>
+
+        <record id="uom_liter_per_minute" model="uom.uom">
+            <field name="name">Litre/minute</field>
+            <field name="category_id" ref="uom_categ_flow_rate"/>
+            <field name="factor">60.0</field>
+            <field name="uom_type">bigger</field>
+            <field name="rounding">0.1</field>
+        </record>
+
+        <!-- Paramètres système par défaut -->
+
+        <!-- Coût de l'eau par défaut (€/m³) -->
+        <record id="config_water_cost_default" model="ir.config_parameter">
+            <field name="key">bsr_agri_irrigation.water_cost_per_cubic_meter</field>
+            <field name="value">2.00</field>
+        </record>
+
+        <!-- Efficacité hydrique par défaut (%) -->
+        <record id="config_water_efficiency_default" model="ir.config_parameter">
+            <field name="key">bsr_agri_irrigation.default_water_efficiency</field>
+            <field name="value">85.0</field>
+        </record>
+
+        <!-- Fréquence maintenance par défaut (jours) -->
+        <record id="config_maintenance_frequency" model="ir.config_parameter">
+            <field name="key">bsr_agri_irrigation.default_maintenance_frequency_days</field>
+            <field name="value">90</field>
+        </record>
+
+        <!-- Seuil alerte critique (%) -->
+        <record id="config_critical_alert_threshold" model="ir.config_parameter">
+            <field name="key">bsr_agri_irrigation.critical_alert_threshold</field>
+            <field name="value">20.0</field>
+        </record>
+
+        <!-- Durée session par défaut (minutes) -->
+        <record id="config_default_session_duration" model="ir.config_parameter">
+            <field name="key">bsr_agri_irrigation.default_session_duration_minutes</field>
+            <field name="value">60</field>
+        </record>
+
+        <!-- Email template pour alertes critiques -->
+        <record id="email_template_critical_alert" model="mail.template">
+            <field name="name">Alerte Critique - Irrigation</field>
+            <field name="model_id" ref="model_bsr_irrigation_alert"/>
+            <field name="subject">[CRITIQUE] Alerte Irrigation - ${object.name}</field>
+            <field name="email_from">${(object.company_id.email or user.email)|safe}</field>
+            <field name="email_to">${object.assigned_to.email}</field>
+            <field name="body_html"><![CDATA[
+<div style="margin: 0px; padding: 0px;">
+    <p>Bonjour ${object.assigned_to.name or 'Responsable'},</p>
+    
+    <h3 style="color: #d32f2f;">⚠️ ALERTE CRITIQUE IRRIGATION</h3>
+    
+    <table style="border-collapse: collapse; width: 100%;">
+        <tr>
+            <td style="border: 1px solid #ddd; padding: 8px;"><strong>Titre:</strong></td>
+            <td style="border: 1px solid #ddd; padding: 8px;">${object.name}</td>
+        </tr>
+        <tr>
+            <td style="border: 1px solid #ddd; padding: 8px;"><strong>Type:</strong></td>
+            <td style="border: 1px solid #ddd; padding: 8px;">${dict(object._fields['alert_type'].selection)[object.alert_type]}</td>
+        </tr>
+        <tr>
+            <td style="border: 1px solid #ddd; padding: 8px;"><strong>Priorité:</strong></td>
+            <td style="border: 1px solid #ddd; padding: 8px; color: #d32f2f;">${dict(object._fields['priority'].selection)[object.priority]}</td>
+        </tr>
+        <tr>
+            <td style="border: 1px solid #ddd; padding: 8px;"><strong>Ferme:</strong></td>
+            <td style="border: 1px solid #ddd; padding: 8px;">${object.farm_id.name or 'N/A'}</td>
+        </tr>
+        <tr>
+            <td style="border: 1px solid #ddd; padding: 8px;"><strong>Système:</strong></td>
+            <td style="border: 1px solid #ddd; padding: 8px;">${object.system_id.name or 'N/A'}</td>
+        </tr>
+        <tr>
+            <td style="border: 1px solid #ddd; padding: 8px;"><strong>Zone:</strong></td>
+            <td style="border: 1px solid #ddd; padding: 8px;">${object.zone_id.name or 'N/A'}</td>
+        </tr>
+        <tr>
+            <td style="border: 1px solid #ddd; padding: 8px;"><strong>Détection:</strong></td>
+            <td style="border: 1px solid #ddd; padding: 8px;">${object.created_date.strftime('%d/%m/%Y %H:%M') if object.created_date else 'N/A'}</td>
+        </tr>
+    </table>
+    
+    <h4>Description:</h4>
+    <p>${object.description or 'Aucune description'}</p>
+    
+    <h4>Action recommandée:</h4>
+    <p style="background-color: #fff3cd; padding: 10px; border-left: 4px solid #ffc107;">
+        ${object.suggested_action or 'Consulter les détails de l\'alerte dans le système'}
+    </p>
+    
+    <p>
+        <a href="${object.get_base_url()}/web#id=${object.id}&view_type=form&model=bsr.irrigation.alert" 
+           style="background-color: #007bff; color: white; padding: 10px 15px; text-decoration: none; border-radius: 4px;">
+            📋 Voir l'alerte
+        </a>
+    </p>
+    
+    <p>Cette alerte nécessite une intervention immédiate.</p>
+    
+    <hr/>
+    <p style="font-size: 12px; color: #666;">
+        Système BSR Agriculture - Module Irrigation<br/>
+        Message automatique, ne pas répondre.
+    </p>
+</div>
+            ]]></field>
+            <field name="auto_delete" eval="False"/>
+        </record>
+
+        <!-- Tâche planifiée pour vérification automatique des alertes -->
+        <record id="ir_cron_check_irrigation_alerts" model="ir.cron">
+            <field name="name">Vérification Alertes Irrigation</field>
+            <field name="model_id" ref="model_bsr_irrigation_alert"/>
+            <field name="active" eval="True"/>
+            <field name="user_id" ref="base.user_root"/>
+            <field name="interval_number">15</field>
+            <field name="interval_type">minutes</field>
+            <field name="numbercall">-1</field>
+            <field name="doall" eval="False"/>
+            <field name="state">code</field>
+            <field name="code">
+# Vérifier et traiter les alertes non traitées
+alerts = model.search([
+    ('status', '=', 'new'),
+    ('priority', 'in', ['critical', 'emergency'])
+])
+for alert in alerts:
+    if alert.created_date:
+        time_diff = time.time() - time.mktime(alert.created_date.timetuple())
+        if time_diff > 1800:  # Plus de 30 minutes (1800 secondes)
+            alert.send_notification()
+            </field>
+        </record>
+
+        <!-- Tâche planifiée pour création automatique de sessions -->
+        <record id="ir_cron_create_irrigation_sessions" model="ir.cron">
+            <field name="name">Création Sessions Irrigation Automatiques</field>
+            <field name="model_id" ref="model_bsr_irrigation_program"/>
+            <field name="active" eval="True"/>
+            <field name="user_id" ref="base.user_root"/>
+            <field name="interval_number">1</field>
+            <field name="interval_type">hours</field>
+            <field name="numbercall">-1</field>
+            <field name="doall" eval="False"/>
+            <field name="state">code</field>
+            <field name="code">
+# Créer des sessions pour les programmes actifs qui le nécessitent
+active_programs = model.search([
+    ('state', '=', 'active')
+])
+
+for program in active_programs:
+    try:
+        if program.next_execution_date:
+            time_diff = time.time() - time.mktime(program.next_execution_date.timetuple())
+            if time_diff >= 0:  # Date d'exécution atteinte ou dépassée
+                can_execute, message = program._check_execution_conditions()
+                if can_execute:
+                    program.action_create_session()
+    except Exception as e:
+        pass  # Log errors in production
+            </field>
+        </record>
+
+    </data>
+</odoo>

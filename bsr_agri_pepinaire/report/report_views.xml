@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Rapport Lot de plants -->
+    <record id="action_report_lot_plant" model="ir.actions.report">
+        <field name="name">Fiche de lot</field>
+        <field name="model">pepiniere.lot.plant</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">bsr_agri_pepinaire.report_lot_plant_document</field>
+        <field name="report_file">bsr_agri_pepinaire.report_lot_plant_document</field>
+        <field name="binding_model_id" ref="model_pepiniere_lot_plant"/>
+        <field name="binding_type">report</field>
+    </record>
+
+
+
+    <!-- Rapport Intervention -->
+    <record id="action_report_intervention" model="ir.actions.report">
+        <field name="name">Fiche d'intervention</field>
+        <field name="model">pepiniere.intervention</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">bsr_agri_pepinaire.report_intervention_document</field>
+        <field name="report_file">bsr_agri_pepinaire.report_intervention_document</field>
+        <field name="binding_model_id" ref="model_pepiniere_intervention"/>
+        <field name="binding_type">report</field>
+    </record>
+
+</odoo>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Menu principal Analyses sous Agriculture -->
+        <menuitem id="menu_bsr_soil_indicator_root" 
+                  name="Analyses" 
+                  parent="bsr_agri_base.menu_agriculture_root"
+                  sequence="40" />
+
+        <!-- Sous-menu Analyses de Sol -->
+        <menuitem id="menu_soil_analysis" 
+                  name="Analyses de Sol" 
+                  parent="menu_bsr_soil_indicator_root"
+                  action="action_soil_analysis"
+                  sequence="10" />
+
+        <!-- Sous-menu Analyses de Culture -->
+        <menuitem id="menu_culture_analysis" 
+                  name="Analyses de Culture" 
+                  parent="menu_bsr_soil_indicator_root"
+                  action="action_culture_analysis"
+                  sequence="20" />
+
+        <!-- Sous-menu Alertes -->
+        <menuitem id="menu_analysis_alerts" 
+                  name="Alertes d'Analyse" 
+                  parent="menu_bsr_soil_indicator_root"
+                  action="action_analysis_alert"
+                  sequence="30" />
+
+        <!-- Menu Configuration -->
+        <menuitem id="menu_bsr_soil_indicator_config" 
+                  name="Configuration Analyses" 
+                  parent="bsr_agri_base.menu_agriculture_config"
+                  sequence="40"
+                  groups="base.group_system" />
+
+        <!-- Sous-menu Types d'Analyse -->
+        <menuitem id="menu_analysis_type" 
+                  name="Types d'Analyse" 
+                  parent="menu_bsr_soil_indicator_config"
+                  action="action_analysis_type"
+                  sequence="10" />
+
+        <!-- Sous-menu Paramètres d'Analyse -->
+        <menuitem id="menu_analysis_parameter" 
+                  name="Paramètres d'Analyse" 
+                  parent="menu_bsr_soil_indicator_config"
+                  action="action_analysis_parameter"
+                  sequence="20" />
+
+    </data>
+</odoo>

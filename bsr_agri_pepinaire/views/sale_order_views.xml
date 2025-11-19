@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Vue formulaire Sale Order héritée -->
+    <record id="view_order_form_pepiniere" model="ir.ui.view">
+        <field name="name">sale.order.form.pepiniere</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <!-- Ajouter un champ invisible pour marquer les commandes pépinière -->
+            <field name="partner_id" position="after">
+                <field name="is_pepiniere_order" invisible="1"/>
+            </field>
+            
+            <!-- Ajouter les champs pépinière dans les lignes de commande (vue tree) -->
+            <xpath expr="//field[@name='order_line']/tree//field[@name='product_id']" position="after">
+                <field name="lot_plant_id" optional="hide"/>
+                <field name="espece_id" optional="hide"/>
+                <field name="variete_id" optional="hide"/>
+                <field name="quantite_disponible" optional="hide"/>
+            </xpath>
+            
+            <!-- Ajouter les champs pépinière dans les lignes de commande (vue form) -->
+            <xpath expr="//field[@name='order_line']/form//field[@name='product_id']" position="after">
+                <field name="lot_plant_id"/>
+                <field name="espece_id"/>
+                <field name="variete_id"/>
+                <field name="quantite_disponible"/>
+            </xpath>
+            
+            <!-- Ajouter un onglet pour les lots si c'est une commande pépinière -->
+            <xpath expr="//page[@name='other_information']" position="after">
+                <page string="Lots de plants" name="lots_plants" attrs="{'invisible': [('is_pepiniere_order', '=', False)]}">
+                    <field name="lot_plant_ids">
+                        <tree>
+                            <field name="name"/>
+                            <field name="espece_id"/>
+                            <field name="variete_id"/>
+                            <field name="quantite_disponible"/>
+                            <field name="state"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Action pour les commandes pépinière -->
+    <record id="action_pepiniere_sale_order" model="ir.actions.act_window">
+        <field name="name">Ventes de plants</field>
+        <field name="res_model">sale.order</field>
+        <field name="view_mode">tree,form,kanban</field>
+        <field name="domain">[('is_pepiniere_order', '=', True)]</field>
+        <field name="context">{'default_is_pepiniere_order': True}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Créer une nouvelle vente de plants
+            </p>
+            <p>
+                Gérez vos ventes de plants via le module de vente standard d'Odoo.
+            </p>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Vue formulaire Paramètre d'analyse -->
+        <record id="view_analysis_parameter_form" model="ir.ui.view">
+            <field name="name">bsr.analysis.parameter.form</field>
+            <field name="model">bsr.analysis.parameter</field>
+            <field name="arch" type="xml">
+                <form string="Paramètre d'analyse">
+                    <header>
+                        <field name="active" widget="boolean_toggle" options="{'autosave': False}"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" placeholder="Nom du paramètre"/>
+                            </h1>
+                            <h2>
+                                <field name="code" placeholder="Code"/>
+                            </h2>
+                        </div>
+                        
+                        <group>
+                            <group>
+                                <field name="analysis_type_id"/>
+                                <field name="data_type"/>
+                                <field name="sequence"/>
+                            </group>
+                            <group>
+                                <field name="uom_id" attrs="{'invisible': [('data_type', 'in', ['boolean', 'selection', 'text'])]}"/>
+                                <field name="alert_enabled"/>
+                                <field name="company_id" groups="base.group_multi_company"/>
+                            </group>
+                        </group>
+                        
+                        <notebook>
+                            <page string="Valeurs de référence" name="reference_values">
+                                <group string="Plage de valeurs" attrs="{'invisible': [('data_type', 'in', ['boolean', 'selection', 'text'])]}">
+                                    <group>
+                                        <field name="min_value"/>
+                                        <field name="max_value"/>
+                                    </group>
+                                    <group>
+                                        <field name="optimal_min"/>
+                                        <field name="optimal_max"/>
+                                    </group>
+                                </group>
+                                
+                                <group string="Valeurs critiques" attrs="{'invisible': [('data_type', 'in', ['boolean', 'selection', 'text'])]}">
+                                    <group>
+                                        <field name="critical_min"/>
+                                        <field name="critical_max"/>
+                                    </group>
+                                </group>
+                                
+                                <group string="Options de sélection" attrs="{'invisible': [('data_type', '!=', 'selection')]}">
+                                    <field name="selection_options" nolabel="1" placeholder="code1|Libellé 1&#10;code2|Libellé 2&#10;..."/>
+                                </group>
+                            </page>
+                            
+                            <page string="Alertes" name="alerts" attrs="{'invisible': [('alert_enabled', '=', False)]}">
+                                <group string="Seuils d'alerte" attrs="{'invisible': [('data_type', 'in', ['boolean', 'selection', 'text'])]}">
+                                    <group>
+                                        <field name="alert_threshold_low"/>
+                                        <field name="alert_threshold_high"/>
+                                    </group>
+                                </group>
+                            </page>
+                            
+                            <page string="Calcul automatique" name="calculation" attrs="{'invisible': [('is_calculated', '=', False)]}">
+                                <group>
+                                    <field name="is_calculated"/>
+                                </group>
+                                <group attrs="{'invisible': [('is_calculated', '=', False)]}">
+                                    <field name="calculation_formula" placeholder="Formule Python pour le calcul automatique"/>
+                                    <field name="depends_on_parameter_ids" widget="many2many_tags"/>
+                                </group>
+                            </page>
+                            
+                            <page string="Description" name="description">
+                                <field name="description" placeholder="Description du paramètre..."/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Vue liste Paramètre d'analyse -->
+        <record id="view_analysis_parameter_tree" model="ir.ui.view">
+            <field name="name">bsr.analysis.parameter.tree</field>
+            <field name="model">bsr.analysis.parameter</field>
+            <field name="arch" type="xml">
+                <tree string="Paramètres d'analyse" default_order="analysis_type_id,sequence,name">
+                    <field name="sequence" widget="handle"/>
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="analysis_type_id"/>
+                    <field name="data_type"/>
+                    <field name="uom_name"/>
+                    <field name="min_value"/>
+                    <field name="max_value"/>
+                    <field name="optimal_min"/>
+                    <field name="optimal_max"/>
+                    <field name="alert_enabled"/>
+                    <field name="is_calculated"/>
+                    <field name="active"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Vue recherche Paramètre d'analyse -->
+        <record id="view_analysis_parameter_search" model="ir.ui.view">
+            <field name="name">bsr.analysis.parameter.search</field>
+            <field name="model">bsr.analysis.parameter</field>
+            <field name="arch" type="xml">
+                <search string="Rechercher paramètres d'analyse">
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="analysis_type_id"/>
+                    <field name="description"/>
+                    <separator/>
+                    <filter string="Actifs" name="filter_active" domain="[('active', '=', True)]"/>
+                    <filter string="Inactifs" name="filter_inactive" domain="[('active', '=', False)]"/>
+                    <separator/>
+                    <filter string="Avec alertes" name="filter_alert_enabled" domain="[('alert_enabled', '=', True)]"/>
+                    <filter string="Calculés" name="filter_calculated" domain="[('is_calculated', '=', True)]"/>
+                    <separator/>
+                    <filter string="Numérique" name="filter_numeric" domain="[('data_type', 'in', ['float', 'integer', 'percentage'])]"/>
+                    <filter string="Booléen" name="filter_boolean" domain="[('data_type', '=', 'boolean')]"/>
+                    <filter string="Texte" name="filter_text" domain="[('data_type', '=', 'text')]"/>
+                    <filter string="Sélection" name="filter_selection" domain="[('data_type', '=', 'selection')]"/>
+                    <separator/>
+                    <group expand="0" string="Grouper par">
+                        <filter string="Type d'analyse" name="group_analysis_type" context="{'group_by': 'analysis_type_id'}"/>
+                        <filter string="Type de données" name="group_data_type" context="{'group_by': 'data_type'}"/>
+                        <filter string="Unité de mesure" name="group_uom" context="{'group_by': 'uom_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Action Paramètre d'analyse -->
+        <record id="action_analysis_parameter" model="ir.actions.act_window">
+            <field name="name">Paramètres d'analyse</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">bsr.analysis.parameter</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{'search_default_filter_active': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Créer un nouveau paramètre d'analyse
+                </p>
+                <p>
+                    Les paramètres définissent les mesures spécifiques pour chaque type d'analyse
+                    (pH, azote, humidité, etc.) avec leurs seuils et unités.
+                </p>
+            </field>
+        </record>
+
+    </data>
+</odoo>
